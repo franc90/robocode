@@ -18,22 +18,22 @@ public class LearningRobot extends Robot {
 
     private EnvironmentPropertiesHelper environmentPropertiesHelper = new EnvironmentPropertiesHelper();
 
+    private EnvironmentProperties properties;
+
     @Override
     public void run() {
-
-
-        EnvironmentProperties properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
+        properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
         strategy = new RobocodeLearningStrategy(properties);
 
         while (true) {
             RobocodeState state = robocodeStateHelper.create(this);
             MotionAction action = strategy.getAction(state);
-            performAction(action, properties);
+            performAction(action);
         }
 
     }
 
-    private void performAction(MotionAction action, EnvironmentProperties properties) {
+    private void performAction(MotionAction action) {
         if (action.getStraightMotion().equals(StraightMotion.FORWARD)) {
             ahead(properties.getDisplacementValue());
         } else {

@@ -59,7 +59,8 @@ public class WallDistanceHelper {
                 wallDistance.setBackWall(wall);
             }
         }
-        return null;
+
+        return wallDistance;
     }
 
     private Wall<Double> getWall(double x, double y, double mapHeight, double mapWidth, double tanAlpha, CompassDirection verticalWall, CompassDirection horizontalWall) {
