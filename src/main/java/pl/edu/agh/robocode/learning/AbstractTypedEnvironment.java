@@ -8,7 +8,12 @@ import piqle.environment.IState;
 abstract class AbstractTypedEnvironment<S extends IState, A extends IAction> extends AbstractEnvironmentSingle {
 
     protected abstract ActionList getActionsList(S state);
+
     protected abstract S nextState(S state, A action);
+
+    protected abstract double calculateReward(S oldState, S newState, A action);
+
+    protected abstract boolean isStateFinal(S state);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -19,22 +24,18 @@ abstract class AbstractTypedEnvironment<S extends IState, A extends IAction> ext
     @SuppressWarnings("unchecked")
     @Override
     public IState successorState(IState state, IAction action) {
-        return nextState((S)state, (A) action);
+        return nextState((S) state, (A) action);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public double getReward(IState oldState, IState newState, IAction action) {
+        return calculateReward((S) oldState, (S) newState, (A) action);
     }
 
     @Override
-    public IState defaultInitialState() {
-        return RobocodeLearningState.initialState(this);
-    }
-
-    @Override
-    public double getReward(IState s1, IState s2, IAction a) {
-        return 0;
-    }
-
-    @Override
-    public boolean isFinal(IState s) {
-        return false;
+    public boolean isFinal(IState state) {
+        return isStateFinal((S) state);
     }
 
     @Override

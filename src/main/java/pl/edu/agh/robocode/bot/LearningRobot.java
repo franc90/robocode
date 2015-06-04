@@ -14,7 +14,6 @@ public class LearningRobot extends Robot {
 
     @Override
     public void run() {
-        strategy.newRound();
 
         while (true) {
             RobocodeState state = helper.create(this);

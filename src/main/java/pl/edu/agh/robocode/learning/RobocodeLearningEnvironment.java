@@ -1,47 +1,53 @@
 package pl.edu.agh.robocode.learning;
 
-import piqle.environment.AbstractEnvironmentSingle;
 import piqle.environment.ActionList;
-import piqle.environment.IAction;
 import piqle.environment.IState;
+import pl.edu.agh.robocode.bot.state.RobocodeState;
 
-import java.util.EnumSet;
 import java.util.stream.Stream;
 
-class RobocodeLearningEnvironment extends AbstractEnvironmentSingle {
+class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearningState, RobocodeLearningAction> {
 
 
-    private final boolean isDebugEnable = false;
+    private static final double REWARD = 10.0;
+    private static final double PUNISHMENT = -10.0;
 
-    @Override
-    public ActionList getActionList(IState s) {
-        return null;
+    private final RobocodeLearningState defaultInitalState;
+    private final EnvironmentProperties properties;
+
+    public RobocodeLearningEnvironment(EnvironmentProperties properties) {
+        this.defaultInitalState = RobocodeLearningState.build()
+                                        .withEnvironment(this)
+                                        .withState(properties.getDeafultInitialState());
+        this.properties = properties;
     }
 
     @Override
-    public IState successorState(IState s, IAction a) {
-        return null;
+    protected ActionList getActionsList(RobocodeLearningState state) {
+        ActionList actionList = new ActionList(state);
+        Stream.of(RobocodeLearningAction.values()).forEach(actionList::add);
+        return actionList;
+    }
+
+    @Override
+    protected RobocodeLearningState nextState(RobocodeLearningState state, RobocodeLearningAction action) {
+        RobocodeLearningState newState = state.copy();
+        newState.makeMove(action, properties.getDisplacementValue());
+        return newState;
+    }
+
+    @Override
+    protected double calculateReward(RobocodeLearningState oldState, RobocodeLearningState newState, RobocodeLearningAction action) {
+        return newState.getDistanceToWall() < oldState.getDistanceToWall() ? REWARD : PUNISHMENT;
+    }
+
+    @Override
+    protected boolean isStateFinal(RobocodeLearningState state) {
+        return state.isFinal();
     }
 
     @Override
     public IState defaultInitialState() {
-        return null;
+        return defaultInitalState;
     }
-
-    @Override
-    public double getReward(IState s1, IState s2, IAction a) {
-        return 0.0;
-    }
-
-    @Override
-    public boolean isFinal(IState s) {
-        return false;
-    }
-
-    @Override
-    public int whoWins(IState s) {
-        return 0;
-    }
-
-
 }
