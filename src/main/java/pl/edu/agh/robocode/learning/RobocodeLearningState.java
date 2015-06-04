@@ -1,44 +1,77 @@
 package pl.edu.agh.robocode.learning;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import piqle.environment.AbstractState;
 import piqle.environment.IEnvironment;
 import piqle.environment.IState;
+import pl.edu.agh.robocode.bots.Distance;
+import pl.edu.agh.robocode.bots.RobocodeState;
 
 class RobocodeLearningState extends AbstractState {
 
-    private int distanceToWall = 100;
+    private final RobocodeState robocodeState;
 
-    public RobocodeLearningState(IEnvironment ct) {
-        super(ct);
+    static RobocodeLearningStateBuilder build() {
+        return environment -> state -> new RobocodeLearningState(environment, state);
     }
 
-    public int getDistanceToWall() {
-        return distanceToWall;
+    static IState initialState(IEnvironment environment) {
+        return new RobocodeLearningState(environment, RobocodeState.initialState());
     }
 
-    public void setDistanceToWall(int distanceToWall) {
-        this.distanceToWall = distanceToWall;
+    private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
+        super(environment);
+        this.robocodeState = robocodeState;
+    }
+
+    public Distance getDistanceToWall() {
+        return robocodeState.getDistanceToWall();
     }
 
     @Override
     public IState copy() {
-        return null;
+        return new RobocodeLearningState(getEnvironment(), robocodeState);
     }
 
     @Override
     public int nnCodingSize() {
-        return 0;
+        return 0; //used only for neural networks
     }
 
     @Override
     public double[] nnCoding() {
-        return new double[0];
+        return new double[0]; //used only for neural networks
     }
 
     @Override
-    public String toString() {
-        return "RobocodeLearningState{" +
-                "distanceToWall=" + distanceToWall +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RobocodeLearningState other = (RobocodeLearningState) o;
+
+        return new EqualsBuilder()
+                .append(robocodeState, other.robocodeState)
+                .isEquals();
     }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31).
+                append(robocodeState).
+                toHashCode();
+    }
+
+
+    interface RobocodeLearningStateBuilder {
+
+        WithStateFunction withEnvironment(RobocodeLearningEnvironment environment);
+    }
+
+    interface WithStateFunction {
+
+        RobocodeLearningState withState(RobocodeState state);
+    }
+
 }
