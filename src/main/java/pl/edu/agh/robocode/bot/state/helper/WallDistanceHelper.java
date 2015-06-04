@@ -1,6 +1,7 @@
 package pl.edu.agh.robocode.bot.state.helper;
 
 import pl.edu.agh.robocode.bot.state.RobotState;
+import pl.edu.agh.robocode.bot.state.distance.CompassDirection;
 import pl.edu.agh.robocode.bot.state.distance.Wall;
 import pl.edu.agh.robocode.bot.state.distance.WallDistance;
 
@@ -20,68 +21,73 @@ public class WallDistanceHelper {
 
         double heading = robotState.getHeading();
         if (heading == 0) {
-            wallDistance.setAheadWallDistance(wallDistance.getNorthWallDistance());
-            wallDistance.setBackWallDistance(wallDistance.getSouthWallDistance());
+            wallDistance.setAheadWall(new Wall<>(CompassDirection.N, wallDistance.getNorthWallDistance()));
+            wallDistance.setBackWall(new Wall<>(CompassDirection.S, wallDistance.getSouthWallDistance()));
         } else if (heading == 90) {
-            wallDistance.setAheadWallDistance(wallDistance.getWestWallDistance());
-            wallDistance.setBackWallDistance(wallDistance.getEastWallDistance());
+            wallDistance.setAheadWall(new Wall<>(CompassDirection.W, wallDistance.getWestWallDistance()));
+            wallDistance.setBackWall(new Wall<>(CompassDirection.E, wallDistance.getEastWallDistance()));
         } else if (heading == 180) {
-            wallDistance.setAheadWallDistance(wallDistance.getSouthWallDistance());
-            wallDistance.setBackWallDistance(wallDistance.getNorthWallDistance());
+            wallDistance.setAheadWall(new Wall<>(CompassDirection.S, wallDistance.getSouthWallDistance()));
+            wallDistance.setBackWall(new Wall<>(CompassDirection.N, wallDistance.getNorthWallDistance()));
         } else if (heading == 270) {
-            wallDistance.setAheadWallDistance(wallDistance.getEastWallDistance());
-            wallDistance.setBackWallDistance(wallDistance.getWestWallDistance());
+            wallDistance.setAheadWall(new Wall<>(CompassDirection.E, wallDistance.getEastWallDistance()));
+            wallDistance.setBackWall(new Wall<>(CompassDirection.W, wallDistance.getWestWallDistance()));
         } else {
             double angle = getLineAngle(heading);
             double tangentValue = Math.tan(angle);
-            double distance;
+            Wall<Double> wall;
 
             if (heading < 90) {
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.W, Wall.WallDirection.N);
-                wallDistance.setAheadWallDistance(distance);
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.E, Wall.WallDirection.S);
-                wallDistance.setBackWallDistance(distance);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.N);
+                wallDistance.setAheadWall(wall);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.S);
+                wallDistance.setBackWall(wall);
             } else if (heading < 180) {
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.W, Wall.WallDirection.S);
-                wallDistance.setAheadWallDistance(distance);
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.E, Wall.WallDirection.N);
-                wallDistance.setBackWallDistance(distance);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.S);
+                wallDistance.setAheadWall(wall);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.N);
+                wallDistance.setBackWall(wall);
             } else if (heading < 270) {
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.E, Wall.WallDirection.S);
-                wallDistance.setAheadWallDistance(distance);
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.W, Wall.WallDirection.N);
-                wallDistance.setBackWallDistance(distance);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.S);
+                wallDistance.setAheadWall(wall);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.N);
+                wallDistance.setBackWall(wall);
             } else {
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.E, Wall.WallDirection.N);
-                wallDistance.setAheadWallDistance(distance);
-                distance = getWallDistance(x, y, mapHeight, mapWidth, tangentValue, Wall.WallDirection.W, Wall.WallDirection.S);
-                wallDistance.setBackWallDistance(distance);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.N);
+                wallDistance.setAheadWall(wall);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.S);
+                wallDistance.setBackWall(wall);
             }
         }
         return null;
     }
 
-    private double getWallDistance(double x, double y, double mapHeight, double mapWidth, double tanAlpha, Wall.WallDirection verticalWall, Wall.WallDirection horizontalWall) {
+    private Wall<Double> getWall(double x, double y, double mapHeight, double mapWidth, double tanAlpha, CompassDirection verticalWall, CompassDirection horizontalWall) {
         double meetY;
         double meetX;
+        CompassDirection wallDirection;
 
-        if (verticalWall == Wall.WallDirection.W) {
+        if (verticalWall == CompassDirection.W) {
+            wallDirection = CompassDirection.W;
             meetX = 0;
         } else {
+            wallDirection = CompassDirection.E;
             meetX = mapWidth;
         }
         meetY = yMeetValue(tanAlpha, meetX, x, y);
 
         if (!correctWall(meetY, mapHeight)) {
-            if (horizontalWall == Wall.WallDirection.N) {
+            if (horizontalWall == CompassDirection.N) {
+                wallDirection = CompassDirection.N;
                 meetY = mapHeight;
             } else {
+                wallDirection = CompassDirection.S;
                 meetY = 0;
             }
             meetX = xMeetValue(tanAlpha, meetY, x, y);
         }
 
-        return computeDistance(x, y, meetX, meetY);
+        return new Wall<>(wallDirection, computeDistance(x, y, meetX, meetY));
     }
 
     private double computeDistance(double x, double y, double x2, double y2) {

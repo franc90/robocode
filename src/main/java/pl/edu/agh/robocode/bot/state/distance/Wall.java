@@ -2,23 +2,19 @@ package pl.edu.agh.robocode.bot.state.distance;
 
 public class Wall<T> {
 
-    public enum WallDirection {
-        N, E, S, W
-    }
-
-    private WallDirection direction;
+    private CompassDirection direction;
     private T distance;
 
-    public Wall(WallDirection direction, T distance) {
+    public Wall(CompassDirection direction, T distance) {
         this.direction = direction;
         this.distance = distance;
     }
 
-    public WallDirection getDirection() {
+    public CompassDirection getDirection() {
         return direction;
     }
 
-    public void setDirection(WallDirection direction) {
+    public void setDirection(CompassDirection direction) {
         this.direction = direction;
     }
 
