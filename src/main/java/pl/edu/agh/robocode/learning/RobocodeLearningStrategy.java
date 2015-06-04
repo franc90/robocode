@@ -1,7 +1,7 @@
 package pl.edu.agh.robocode.learning;
 
-import pl.edu.agh.robocode.bots.*;
-import pl.edu.agh.robocode.bots.RobocodeState;
+import pl.edu.agh.robocode.bot.RobocodeStrategy;
+import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.motion.MotionAction;
 
 public class RobocodeLearningStrategy implements RobocodeStrategy {
