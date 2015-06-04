@@ -8,7 +8,6 @@ import piqle.environment.IAction;
 import piqle.environment.IEnvironment;
 import piqle.environment.IState;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -105,33 +104,7 @@ public class AbstractAgent implements IAgent{
 	}
 
 	public void saveAgent() {
-	JFileChooser chooser=new JFileChooser();
-	chooser.setCurrentDirectory(new File(".")); 
-	File sauvegarde; 
-	ObjectOutputStream sortie;
-	String ext[]={"agt"};
-	/*ExtensionFileFilter filter = new ExtensionFileFilter(ext);
-	filter.setDescription("Agent file"); 
-	chooser.setFileFilter(filter); */
-	int returnVal = chooser.showSaveDialog(null); 
-	if(returnVal == JFileChooser.APPROVE_OPTION) 
-	    { System.out.println("You chose to open this file: " 
-				 + chooser.getSelectedFile().getName()); 
-	    
-	    sauvegarde=chooser.getSelectedFile(); 
-	    }
-	else 
-	    {
-		sauvegarde=new File("raymond.agt"); 
-	
-	    }
-	try{
-	sortie=new ObjectOutputStream(new FileOutputStream(sauvegarde)); 
-	sortie.writeObject(this); 
-	sortie.close(); 
-	}
-	catch(Exception e){ System.err.println("Problem when trying to save agent "+e.getMessage()); 
-	}
+		saveAgent("agent");
 	
 	}
 

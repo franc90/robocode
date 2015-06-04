@@ -26,7 +26,7 @@ package piqle.agents;
 import piqle.algorithms.ISelector;
 import piqle.environment.*;
 
-import javax.swing.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -123,40 +123,7 @@ public class TwoPlayerAgent extends AbstractAgent{
 	return resultat; 
 	}// readAgent
 
-	/** Same as above, but the file name is not given.*/
-	public static IAgent readAgent(IEnvironment s) {
-	JFileChooser chooser=new JFileChooser();
-	chooser.setCurrentDirectory(new File(".")); 
-	String extension="agt";
-	File fichierALire; 
-	ObjectInputStream entree;
-		LoneAgent resultat=null;
-/*	ExtensionFileFilter filter = new ExtensionFileFilter();
 
-	filter.addExtension(extension);  
-	filter.setDescription("Agent file"); 
-	chooser.setFileFilter(filter); */
-	int returnVal = chooser.showOpenDialog(null); 
-	if(returnVal == JFileChooser.APPROVE_OPTION) 
-	    { System.err.println("You chose to open this file: " 
-				 + chooser.getSelectedFile().getName()); 
-	    
-	    fichierALire=chooser.getSelectedFile(); 
-	    }
-	else 
-	    {
-		return null; 
-	
-	    }
-	try{
-	entree=new ObjectInputStream(new FileInputStream(fichierALire)); 
-	resultat=(LoneAgent)entree.readObject(); 
-	entree.close(); 
-	}
-	catch(Exception e){ System.err.println("Problem when reading agent file. "+e.getMessage()); }
-	resultat.currentState=((IEnvironmentTwoPlayers) s).defaultInitialTwoPlayerState(); 
-	return resultat; 
-	}
 
     
 }

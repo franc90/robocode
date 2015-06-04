@@ -1,10 +1,6 @@
 package piqle.environment;
 
-import javax.swing.JFrame; 
-import javax.swing.BoxLayout; 
-import javax.swing.JTextArea; 
-import java.awt.*; 
-import java.awt.event.*; 
+
 
 /**
  *	This program is free software; you can redistribute it and/or modify
@@ -61,26 +57,13 @@ import java.awt.event.*;
 	    /* Graphical methods */
 	    
 	    
-	    protected JFrame graf; 
-	    protected JTextArea defaultText=new JTextArea("Default Text"); 
+
 	    public void setGraphics(){
-		graf=new JFrame(); 
-		graf.setSize(new Dimension(300,300)); 
-		// TODO revoir le comportement du programme en cas de quittage
-		graf.addWindowListener(new WindowAdapter(){
-	                public void windowClosing(WindowEvent e){
-			    System.out.println("On quitte");
-	                    System.exit(0);
-	                }
-	            });             
-		graf.getContentPane().setLayout(new BoxLayout(graf.getContentPane(),BoxLayout.Y_AXIS)); 
-		
-		graf.getContentPane().add(defaultText); 
-		graf.setVisible(true); 
+
 
 	} 
 	    public void closeGraphics(){}
-	    public void sendState(IState e){defaultText.setText(e+""); }
+	    public void sendState(IState e){}
 	    public void clearGraphics(){}
 
 
