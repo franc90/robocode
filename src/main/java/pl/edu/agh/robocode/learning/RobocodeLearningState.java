@@ -14,8 +14,6 @@ class RobocodeLearningState extends AbstractState {
     private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
         super(environment);
         this.robocodeState = robocodeState;
-        System.out.println(robocodeState);
-        System.out.println(robocodeState.getWallDistance());
         distanceToWall = robocodeState.getWallDistance().getAheadWallDistance();
     }
 
@@ -71,6 +69,10 @@ class RobocodeLearningState extends AbstractState {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public boolean isStateFinal() {
+        return robocodeState.getRobotState().getEnergy() <= 0.0;
     }
 
     public static class Builder {

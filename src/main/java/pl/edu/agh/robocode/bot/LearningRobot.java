@@ -8,9 +8,10 @@ import pl.edu.agh.robocode.motion.StraightMotion;
 import pl.edu.agh.robocode.motion.TurnMotion;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
+import robocode.AdvancedRobot;
 import robocode.Robot;
 
-public class LearningRobot extends Robot {
+public class LearningRobot extends AdvancedRobot {
 
     private RobocodeStrategy strategy;
 

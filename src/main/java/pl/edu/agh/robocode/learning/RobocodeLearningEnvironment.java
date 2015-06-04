@@ -44,7 +44,7 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
 
     @Override
     protected boolean isStateFinal(RobocodeLearningState state) {
-        return state.isFinal();
+        return state.isStateFinal();
     }
 
     @Override
