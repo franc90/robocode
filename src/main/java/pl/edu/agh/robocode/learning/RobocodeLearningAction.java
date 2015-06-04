@@ -1,22 +1,33 @@
 package pl.edu.agh.robocode.learning;
 
 import piqle.environment.IAction;
+import pl.edu.agh.robocode.motion.MotionAction;
+import pl.edu.agh.robocode.motion.StraightMotion;
+import pl.edu.agh.robocode.motion.TurnMotion;
 
 enum RobocodeLearningAction implements IAction {
 
-    GO_UP(-10),
-    GO_DOWN(5),
-    TURN_RIGHT(2),
-    TURN_LEFT(2);
+    FORWARD(StraightMotion.FORWARD, TurnMotion.NONE),
+    BACKWARD(StraightMotion.BACKWARD, TurnMotion.NONE),
+    FORWARD_LEFT(StraightMotion.FORWARD, TurnMotion.LEFT),
+    FORWARD_RIGHT(StraightMotion.FORWARD, TurnMotion.RIGHT),
+    BACKWARD_LEFT(StraightMotion.BACKWARD, TurnMotion.LEFT),
+    BACKWARD_RIGHT(StraightMotion.FORWARD, TurnMotion.RIGHT);
 
-    private final int movement;
+    private final StraightMotion straightMotion;
+    private final TurnMotion turnMotion;
 
-    RobocodeLearningAction(int movement) {
-        this.movement = movement;
+    RobocodeLearningAction(StraightMotion straightMotion, TurnMotion turnMotion) {
+        this.straightMotion = straightMotion;
+        this.turnMotion = turnMotion;
     }
 
-    public int getMovement() {
-        return movement;
+    public StraightMotion getStraightMotion() {
+        return straightMotion;
+    }
+
+    public TurnMotion getTurnMotion() {
+        return turnMotion;
     }
 
     public Object copy() {
@@ -30,4 +41,9 @@ enum RobocodeLearningAction implements IAction {
     public double[] nnCoding() {
         return new double[0];
     }
+
+    public MotionAction toMotionAction() {
+        return new MotionAction(straightMotion, turnMotion);
+    }
+
 }

@@ -1,44 +1,81 @@
 package pl.edu.agh.robocode.learning;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import piqle.environment.AbstractState;
 import piqle.environment.IEnvironment;
-import piqle.environment.IState;
+import pl.edu.agh.robocode.bot.state.RobocodeState;
+import pl.edu.agh.robocode.motion.StraightMotion;
+
 
 class RobocodeLearningState extends AbstractState {
 
-    private int distanceToWall = 100;
+    private final RobocodeState robocodeState;
+    private double distanceToWall;
 
-    public RobocodeLearningState(IEnvironment ct) {
-        super(ct);
+    static RobocodeLearningStateBuilder build() {
+        return environment -> state -> new RobocodeLearningState(environment, state);
     }
 
-    public int getDistanceToWall() {
+    private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
+        super(environment);
+        this.robocodeState = robocodeState;
+        distanceToWall = robocodeState.getWallDistance().getAheadWallDistance();
+    }
+
+    double getDistanceToWall() {
         return distanceToWall;
     }
 
-    public void setDistanceToWall(int distanceToWall) {
-        this.distanceToWall = distanceToWall;
-    }
-
     @Override
-    public IState copy() {
-        return null;
+    public RobocodeLearningState copy() {
+        return new RobocodeLearningState(getEnvironment(), robocodeState);
     }
 
     @Override
     public int nnCodingSize() {
-        return 0;
+        return 0; //used only for neural networks
     }
 
     @Override
     public double[] nnCoding() {
-        return new double[0];
+        return new double[0]; //used only for neural networks
     }
 
     @Override
-    public String toString() {
-        return "RobocodeLearningState{" +
-                "distanceToWall=" + distanceToWall +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RobocodeLearningState other = (RobocodeLearningState) o;
+
+        return new EqualsBuilder()
+                .append(distanceToWall, other.distanceToWall)
+                .isEquals();
     }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31)
+                .append(distanceToWall)
+                .toHashCode();
+    }
+
+    public void makeMove(RobocodeLearningAction action, double displacementValue) {
+        distanceToWall = calculateMove(action.getStraightMotion(), displacementValue);
+    }
+
+    private double calculateMove(StraightMotion straightMotion, double displacementValue) {
+        return StraightMotion.FORWARD == straightMotion ? displacementValue : -displacementValue;
+    }
+
+    interface RobocodeLearningStateBuilder {
+
+        WithStateFunction withEnvironment(IEnvironment environment);
+    }
+
+    interface WithStateFunction {
+
+        RobocodeLearningState withState(RobocodeState state);
+    }
+
 }
