@@ -9,26 +9,31 @@ import pl.edu.agh.robocode.motion.TurnMotion;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
 import robocode.Robot;
-import robocode.RoundEndedEvent;
 
 public class LearningRobot extends Robot {
 
+    private RobocodeStrategy strategy;
+
+    private RobocodeStateHelper robocodeStateHelper = new RobocodeStateHelper();
+
+    private EnvironmentPropertiesHelper environmentPropertiesHelper = new EnvironmentPropertiesHelper();
+
     @Override
     public void run() {
-//        RobocodeStateHelper robocodeStateHelper = new RobocodeStateHelper();
-//        EnvironmentPropertiesHelper environmentPropertiesHelper = new EnvironmentPropertiesHelper();
-//        EnvironmentProperties properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
-//        RobocodeStrategy strategy = new RobocodeLearningStrategy(properties);
 
-//            RobocodeState state = robocodeStateHelper.create(this);
-//            MotionAction action = strategy.getAction(state);
-//            performAction(action, properties);
-            System.out.println("Dupa");
 
+        EnvironmentProperties properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
+        strategy = new RobocodeLearningStrategy(properties);
+
+        while (true) {
+            RobocodeState state = robocodeStateHelper.create(this);
+            MotionAction action = strategy.getAction(state);
+            performAction(action, properties);
+        }
 
     }
 
-    /*private void performAction(MotionAction action, EnvironmentProperties properties) {
+    private void performAction(MotionAction action, EnvironmentProperties properties) {
         if (action.getStraightMotion().equals(StraightMotion.FORWARD)) {
             ahead(properties.getDisplacementValue());
         } else {
@@ -40,5 +45,5 @@ public class LearningRobot extends Robot {
         } else if (action.getTurnMotion().equals(TurnMotion.RIGHT)) {
             turnRight(properties.getTurnAngle());
         }
-    }*/
+    }
 }
