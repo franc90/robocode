@@ -1,7 +1,5 @@
 package pl.edu.agh.robocode.learning;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import piqle.environment.AbstractState;
 import piqle.environment.IEnvironment;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
@@ -12,10 +10,6 @@ class RobocodeLearningState extends AbstractState {
 
     private final RobocodeState robocodeState;
     private double distanceToWall;
-
-    static RobocodeLearningStateBuilder build() {
-        return environment -> state -> new RobocodeLearningState(environment, state);
-    }
 
     private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
         super(environment);
@@ -46,18 +40,22 @@ class RobocodeLearningState extends AbstractState {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RobocodeLearningState other = (RobocodeLearningState) o;
 
-        return new EqualsBuilder()
-                .append(distanceToWall, other.distanceToWall)
-                .isEquals();
+        RobocodeLearningState that = (RobocodeLearningState) o;
+
+        if (Double.compare(that.distanceToWall, distanceToWall) != 0) return false;
+        return !(robocodeState != null ? !robocodeState.equals(that.robocodeState) : that.robocodeState != null);
+
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 31)
-                .append(distanceToWall)
-                .toHashCode();
+        int result;
+        long temp;
+        result = robocodeState != null ? robocodeState.hashCode() : 0;
+        temp = Double.doubleToLongBits(distanceToWall);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     public void makeMove(RobocodeLearningAction action, double displacementValue) {
@@ -76,6 +74,28 @@ class RobocodeLearningState extends AbstractState {
     interface WithStateFunction {
 
         RobocodeLearningState withState(RobocodeState state);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private IEnvironment environment; private RobocodeState robocodeState;
+
+        public Builder withEnvironment(IEnvironment environment) {
+            this.environment = environment;
+            return this;
+        }
+
+        public Builder withRobocodeState(RobocodeState robocodeState) {
+            this.robocodeState = robocodeState;
+            return this;
+        }
+
+        public RobocodeLearningState build() {
+            return new RobocodeLearningState(environment, robocodeState);
+        }
     }
 
 }

@@ -102,18 +102,35 @@ public class WallDistance {
     }
 
     public Wall<Double> getNearestWall() {
-        Map.Entry<CompassDirection, Double> value = wallDistance
-                .entrySet()
-                .stream()
-                .min((x, y) -> x.getValue().compareTo(y.getValue()))
-                .get();
+//        Map.Entry<CompassDirection, Double> value = wallDistance
+//                .entrySet()
+//                .stream()
+//                .min((x, y) -> x.getValue().compareTo(y.getValue()))
+//                .get();
+        Iterator<Map.Entry<CompassDirection, Double>> it = wallDistance.entrySet().iterator();
+        Map.Entry<CompassDirection, Double> value = null;
+        while (it.hasNext()) {
+            Map.Entry<CompassDirection, Double> next = it.next();
+            if (value == null) {
+                value = next;
+                continue;
+            }
 
-        return new Wall<>(value.getKey(), value.getValue());
+            if (next.getValue() < value.getValue()) {
+                value = next;
+            }
+        }
+
+        if (value == null) {
+            return null;
+        }
+
+        return new Wall<Double>(value.getKey(), value.getValue());
     }
 
     public Wall<NormalizedDistance> getNormalizedNearestWallDistance() {
         Wall<Double> nearestWall = getNearestWall();
         NormalizedDistance normalizedDistance = helper.normalize(nearestWall.getDistance());
-        return new Wall<>(nearestWall.getDirection(), normalizedDistance);
+        return new Wall<NormalizedDistance>(nearestWall.getDirection(), normalizedDistance);
     }
 }
