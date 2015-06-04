@@ -8,7 +8,7 @@ import piqle.environment.IState;
 import java.util.EnumSet;
 import java.util.stream.Stream;
 
-public class RobocodeEnvironment extends AbstractEnvironmentSingle {
+class RobocodeLearningEnvironment extends AbstractEnvironmentSingle {
 
 
     private final boolean isDebugEnable = false;
@@ -16,21 +16,21 @@ public class RobocodeEnvironment extends AbstractEnvironmentSingle {
     @Override
     public ActionList getActionList(IState s) {
         ActionList actionList = new ActionList(s);
-        RobocodeState state = (RobocodeState)s;
+        RobocodeLearningState state = (RobocodeLearningState)s;
         if(state.getDistanceToWall() >= 100)
-            EnumSet.of(RobocodeAction.GO_DOWN, RobocodeAction.TURN_LEFT, RobocodeAction.TURN_RIGHT)
+            EnumSet.of(RobocodeLearningAction.GO_DOWN, RobocodeLearningAction.TURN_LEFT, RobocodeLearningAction.TURN_RIGHT)
                     .stream().forEach(actionList::add);
         else
-            Stream.of(RobocodeAction.values()).forEach(actionList::add);
+            Stream.of(RobocodeLearningAction.values()).forEach(actionList::add);
         printDebug("ActionList:\n" + actionList);
         return actionList;
     }
 
     @Override
     public IState successorState(IState s, IAction a) {
-        RobocodeState state = (RobocodeState) s;
-        RobocodeState newState = new RobocodeState(this);
-        RobocodeAction action = (RobocodeAction)a;
+        RobocodeLearningState state = (RobocodeLearningState) s;
+        RobocodeLearningState newState = new RobocodeLearningState(this);
+        RobocodeLearningAction action = (RobocodeLearningAction)a;
         newState.setDistanceToWall(state.getDistanceToWall() + action.getMovement());
         printDebug("New state:" + newState + " for old:" + state + " and action:" + action);
         return newState;
@@ -38,20 +38,20 @@ public class RobocodeEnvironment extends AbstractEnvironmentSingle {
 
     @Override
     public IState defaultInitialState() {
-        return new RobocodeState(this);
+        return new RobocodeLearningState(this);
     }
 
     @Override
     public double getReward(IState s1, IState s2, IAction a) {
-        RobocodeState oldState = (RobocodeState) s1;
-        RobocodeState newState = (RobocodeState) s2;
+        RobocodeLearningState oldState = (RobocodeLearningState) s1;
+        RobocodeLearningState newState = (RobocodeLearningState) s2;
         printDebug("Reward for:" + oldState + "|" + newState);
         return newState.getDistanceToWall() < oldState.getDistanceToWall() ? 1 : -1;
     }
 
     @Override
     public boolean isFinal(IState s) {
-        RobocodeState state = (RobocodeState) s;
+        RobocodeLearningState state = (RobocodeLearningState) s;
         return state.getDistanceToWall() <= 0;
     }
 

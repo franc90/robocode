@@ -2,7 +2,7 @@ package pl.edu.agh.robocode.learning;
 
 import piqle.environment.IAction;
 
-public enum RobocodeAction implements IAction {
+enum RobocodeLearningAction implements IAction {
 
     GO_UP(-10),
     GO_DOWN(5),
@@ -11,7 +11,7 @@ public enum RobocodeAction implements IAction {
 
     private final int movement;
 
-    RobocodeAction(int movement) {
+    RobocodeLearningAction(int movement) {
         this.movement = movement;
     }
 

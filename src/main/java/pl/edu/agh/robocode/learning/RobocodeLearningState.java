@@ -4,11 +4,11 @@ import piqle.environment.AbstractState;
 import piqle.environment.IEnvironment;
 import piqle.environment.IState;
 
-public class RobocodeState extends AbstractState {
+class RobocodeLearningState extends AbstractState {
 
     private int distanceToWall = 100;
 
-    public RobocodeState(IEnvironment ct) {
+    public RobocodeLearningState(IEnvironment ct) {
         super(ct);
     }
 
@@ -37,7 +37,7 @@ public class RobocodeState extends AbstractState {
 
     @Override
     public String toString() {
-        return "RobocodeState{" +
+        return "RobocodeLearningState{" +
                 "distanceToWall=" + distanceToWall +
                 '}';
     }

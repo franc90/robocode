@@ -4,10 +4,10 @@ import piqle.agents.LoneAgent;
 import piqle.algorithms.QLearningSelector;
 import piqle.referees.OnePlayerReferee;
 
-public class LearningTest {
+class LearningTest {
 
     public static void main(String[] argv) {
-        RobocodeEnvironment environment = new RobocodeEnvironment();
+        RobocodeLearningEnvironment environment = new RobocodeLearningEnvironment();
         QLearningSelector algo = new QLearningSelector();
         algo.setGamma(1.00);
         double epsi=0.5;
@@ -18,7 +18,7 @@ public class LearningTest {
         double total = 0.0;
         double perEpisode = 0.0;
         for (int i = 0; i < 10000; i++) {
-            referee.episode(new RobocodeState(environment));
+            referee.episode(new RobocodeLearningState(environment));
             double reward = referee.getRewardForEpisode();
             total += reward;
             perEpisode += reward;
