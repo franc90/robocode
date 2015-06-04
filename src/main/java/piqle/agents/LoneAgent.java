@@ -21,15 +21,14 @@ package piqle.agents;
  *
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import javax.swing.JFileChooser;
-
-import piqle.util.ExtensionFileFilter;
 import piqle.algorithms.ISelector;
 import piqle.environment.IEnvironment;
 import piqle.environment.IEnvironmentSingle;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 
 /** The basic behavior of an Agent is : 
  <ul>
@@ -99,11 +98,11 @@ public class LoneAgent extends AbstractAgent{
 	String extension="agt";
 	File fichierALire; 
 	ObjectInputStream entree;
-	ExtensionFileFilter filter = new ExtensionFileFilter(); 
-	LoneAgent resultat=null; 
-	filter.addExtension(extension);  
+	LoneAgent resultat=null;
+	/*ExtensionFileFilter filter = new ExtensionFileFilter();
+	filter.addExtension(extension);
 	filter.setDescription("Agent file"); 
-	chooser.setFileFilter(filter); 
+	chooser.setFileFilter(filter); */
 	int returnVal = chooser.showOpenDialog(null); 
 	if(returnVal == JFileChooser.APPROVE_OPTION) 
 	    { System.err.println("You choose to open this file: " 

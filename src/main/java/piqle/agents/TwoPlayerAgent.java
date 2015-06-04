@@ -23,20 +23,13 @@ package piqle.agents;
  */
 
 
+import piqle.algorithms.ISelector;
+import piqle.environment.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
-
-import javax.swing.JFileChooser;
-
-import piqle.util.ExtensionFileFilter;
-import piqle.algorithms.ISelector;
-import piqle.environment.IAction;
-import piqle.environment.IEnvironment;
-import piqle.environment.IEnvironmentTwoPlayers;
-import piqle.environment.IState;
-import piqle.environment.ITwoPlayerState;
 
 /** Adversarial agent must wait the answer of its opponent before learning 
     (afterstates, <a href="http://www.cs.ualberta.ca/~sutton/book/ebook/node68.html">Sutton & Barto page 156</a>)
@@ -137,11 +130,12 @@ public class TwoPlayerAgent extends AbstractAgent{
 	String extension="agt";
 	File fichierALire; 
 	ObjectInputStream entree;
-	ExtensionFileFilter filter = new ExtensionFileFilter(); 
-	LoneAgent resultat=null; 
+		LoneAgent resultat=null;
+/*	ExtensionFileFilter filter = new ExtensionFileFilter();
+
 	filter.addExtension(extension);  
 	filter.setDescription("Agent file"); 
-	chooser.setFileFilter(filter); 
+	chooser.setFileFilter(filter); */
 	int returnVal = chooser.showOpenDialog(null); 
 	if(returnVal == JFileChooser.APPROVE_OPTION) 
 	    { System.err.println("You chose to open this file: " 

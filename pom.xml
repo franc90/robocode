@@ -16,11 +16,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/robocode.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
-        </dependency>
     </dependencies>
 
     <build>

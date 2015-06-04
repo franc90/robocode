@@ -1,7 +1,5 @@
 package pl.edu.agh.robocode.learning;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import piqle.environment.AbstractState;
 import piqle.environment.IEnvironment;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
@@ -46,18 +44,17 @@ class RobocodeLearningState extends AbstractState {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RobocodeLearningState other = (RobocodeLearningState) o;
 
-        return new EqualsBuilder()
-                .append(distanceToWall, other.distanceToWall)
-                .isEquals();
+        RobocodeLearningState that = (RobocodeLearningState) o;
+
+        return Double.compare(that.distanceToWall, distanceToWall) == 0;
+
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 31)
-                .append(distanceToWall)
-                .toHashCode();
+        long temp = Double.doubleToLongBits(distanceToWall);
+        return (int) (temp ^ (temp >>> 32));
     }
 
     public void makeMove(RobocodeLearningAction action, double displacementValue) {
