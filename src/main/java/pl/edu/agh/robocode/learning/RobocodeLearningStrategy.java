@@ -6,6 +6,7 @@ import piqle.referees.OnePlayerReferee;
 import pl.edu.agh.robocode.bot.RobocodeStrategy;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.motion.MotionAction;
+import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 public class RobocodeLearningStrategy implements RobocodeStrategy {
 
@@ -22,11 +23,11 @@ public class RobocodeLearningStrategy implements RobocodeStrategy {
         referee.setMaxIter(ITERATIONS);
     }
 
-    @Override
     public MotionAction getAction(RobocodeState state) {
-        RobocodeLearningState learningState = RobocodeLearningState.build()
+        RobocodeLearningState learningState = RobocodeLearningState.builder()
                 .withEnvironment(agent.getEnvironment())
-                .withState(state);
+                .withRobocodeState(state)
+                .build();
         referee.episode(learningState);
         RobocodeLearningAction action = (RobocodeLearningAction) algo.bestAction(learningState);
         return action.toMotionAction();

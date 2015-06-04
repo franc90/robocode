@@ -21,17 +21,17 @@ public class WallDistanceHelper {
 
         double heading = robotState.getHeading();
         if (heading == 0) {
-            wallDistance.setAheadWall(new Wall<>(CompassDirection.N, wallDistance.getNorthWallDistance()));
-            wallDistance.setBackWall(new Wall<>(CompassDirection.S, wallDistance.getSouthWallDistance()));
+            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.N, wallDistance.getNorthWallDistance()));
+            wallDistance.setBackWall(new Wall<Double>(CompassDirection.S, wallDistance.getSouthWallDistance()));
         } else if (heading == 90) {
-            wallDistance.setAheadWall(new Wall<>(CompassDirection.W, wallDistance.getWestWallDistance()));
-            wallDistance.setBackWall(new Wall<>(CompassDirection.E, wallDistance.getEastWallDistance()));
+            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.W, wallDistance.getWestWallDistance()));
+            wallDistance.setBackWall(new Wall<Double>(CompassDirection.E, wallDistance.getEastWallDistance()));
         } else if (heading == 180) {
-            wallDistance.setAheadWall(new Wall<>(CompassDirection.S, wallDistance.getSouthWallDistance()));
-            wallDistance.setBackWall(new Wall<>(CompassDirection.N, wallDistance.getNorthWallDistance()));
+            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.S, wallDistance.getSouthWallDistance()));
+            wallDistance.setBackWall(new Wall<Double>(CompassDirection.N, wallDistance.getNorthWallDistance()));
         } else if (heading == 270) {
-            wallDistance.setAheadWall(new Wall<>(CompassDirection.E, wallDistance.getEastWallDistance()));
-            wallDistance.setBackWall(new Wall<>(CompassDirection.W, wallDistance.getWestWallDistance()));
+            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.E, wallDistance.getEastWallDistance()));
+            wallDistance.setBackWall(new Wall<Double>(CompassDirection.W, wallDistance.getWestWallDistance()));
         } else {
             double angle = getLineAngle(heading);
             double tangentValue = Math.tan(angle);
@@ -87,7 +87,7 @@ public class WallDistanceHelper {
             meetX = xMeetValue(tanAlpha, meetY, x, y);
         }
 
-        return new Wall<>(wallDirection, computeDistance(x, y, meetX, meetY));
+        return new Wall<Double>(wallDirection, computeDistance(x, y, meetX, meetY));
     }
 
     private double computeDistance(double x, double y, double x2, double y2) {

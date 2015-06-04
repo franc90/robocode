@@ -1,10 +1,10 @@
-package pl.edu.agh.robocode.learning;
+package pl.edu.agh.robocode.properties;
 
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 
 public interface EnvironmentProperties {
 
-    RobocodeState getDeafultInitialState();
+    RobocodeState getInitialState();
 
     double getDisplacementValue();
 

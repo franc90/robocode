@@ -2,9 +2,7 @@ package pl.edu.agh.robocode.learning;
 
 import piqle.environment.ActionList;
 import piqle.environment.IState;
-import pl.edu.agh.robocode.bot.state.RobocodeState;
-
-import java.util.stream.Stream;
+import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearningState, RobocodeLearningAction> {
 
@@ -16,16 +14,19 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
     private final EnvironmentProperties properties;
 
     public RobocodeLearningEnvironment(EnvironmentProperties properties) {
-        this.defaultInitalState = RobocodeLearningState.build()
-                                        .withEnvironment(this)
-                                        .withState(properties.getDeafultInitialState());
+        this.defaultInitalState = RobocodeLearningState.builder()
+                .withEnvironment(this)
+                .withRobocodeState(properties.getInitialState())
+                .build();
         this.properties = properties;
     }
 
     @Override
     protected ActionList getActionsList(RobocodeLearningState state) {
         ActionList actionList = new ActionList(state);
-        Stream.of(RobocodeLearningAction.values()).forEach(actionList::add);
+        for (RobocodeLearningAction robocodeLearningAction : RobocodeLearningAction.values()) {
+            actionList.add(robocodeLearningAction);
+        }
         return actionList;
     }
 
