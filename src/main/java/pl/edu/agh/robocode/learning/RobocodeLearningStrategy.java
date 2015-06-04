@@ -5,6 +5,7 @@ import piqle.algorithms.QLearningSelector;
 import piqle.referees.OnePlayerReferee;
 import pl.edu.agh.robocode.bot.RobocodeStrategy;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
+import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.motion.MotionAction;
 
 public class RobocodeLearningStrategy implements RobocodeStrategy {

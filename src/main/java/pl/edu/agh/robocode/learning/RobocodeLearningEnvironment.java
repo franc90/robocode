@@ -2,7 +2,7 @@ package pl.edu.agh.robocode.learning;
 
 import piqle.environment.ActionList;
 import piqle.environment.IState;
-import pl.edu.agh.robocode.bot.state.RobocodeState;
+import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 import java.util.stream.Stream;
 
@@ -18,7 +18,7 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
     public RobocodeLearningEnvironment(EnvironmentProperties properties) {
         this.defaultInitalState = RobocodeLearningState.build()
                                         .withEnvironment(this)
-                                        .withState(properties.getDeafultInitialState());
+                                        .withState(properties.getInitialState());
         this.properties = properties;
     }
 

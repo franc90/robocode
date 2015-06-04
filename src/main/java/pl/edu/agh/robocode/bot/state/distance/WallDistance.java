@@ -3,11 +3,13 @@ package pl.edu.agh.robocode.bot.state.distance;
 import pl.edu.agh.robocode.bot.state.distance.helper.NormalizedDistanceHelper;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class WallDistance {
 
-    private Map<CompassDirection, Double> wallDistance = new HashMap<>();
+    private Map<CompassDirection, Double> wallDistance = new HashMap<CompassDirection, Double>();
 
     private Wall<Double> aheadWall;
 
