@@ -76,14 +76,14 @@ public class LearningRobot extends AdvancedRobot {
     public void onRoundEnded(RoundEndedEvent event) {
         RoboState state = new RoboState();
         state.setNr(getRoundNum() * 4);
-        helper.persist(roboState);
+        helper.persist(state);
     }
 
     @Override
     public void onBattleEnded(BattleEndedEvent event) {
         RoboState state = new RoboState();
         state.setNr(getRoundNum() * 4);
-        helper.persist(roboState);
+        helper.persist(state);
     }
 
     @Override
