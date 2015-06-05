@@ -26,19 +26,19 @@ public class RobocodeStateHelper {
     private CompassDirection getRobotDirection(RobotState robotState) {
         double angle = robotState.getHeading();
 
-        if (45 <= angle && angle > 315 ) {
+        if (45 <= angle || angle > 315 ) {
             return CompassDirection.N;
         }
 
         if (135 <= angle) {
-            return CompassDirection.W;
+            return CompassDirection.E;
         }
 
         if (225 <= angle) {
             return CompassDirection.S;
         }
 
-        return CompassDirection.E;
+        return CompassDirection.W;
     }
 
 }
