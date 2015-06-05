@@ -102,11 +102,6 @@ public class WallDistance {
     }
 
     public Wall<Double> getNearestWall() {
-//        Map.Entry<CompassDirection, Double> value = wallDistance
-//                .entrySet()
-//                .stream()
-//                .min((x, y) -> x.getValue().compareTo(y.getValue()))
-//                .get();
         Iterator<Map.Entry<CompassDirection, Double>> it = wallDistance.entrySet().iterator();
         Map.Entry<CompassDirection, Double> value = null;
         while (it.hasNext()) {

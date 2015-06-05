@@ -27,38 +27,38 @@ public class WallDistanceHelper {
             wallDistance.setAheadWall(new Wall<Double>(CompassDirection.N, wallDistance.getNorthWallDistance()));
             wallDistance.setBackWall(new Wall<Double>(CompassDirection.S, wallDistance.getSouthWallDistance()));
         } else if (heading == 90) {
-            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.W, wallDistance.getWestWallDistance()));
-            wallDistance.setBackWall(new Wall<Double>(CompassDirection.E, wallDistance.getEastWallDistance()));
+            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.E, wallDistance.getWestWallDistance()));
+            wallDistance.setBackWall(new Wall<Double>(CompassDirection.W, wallDistance.getEastWallDistance()));
         } else if (heading == 180) {
             wallDistance.setAheadWall(new Wall<Double>(CompassDirection.S, wallDistance.getSouthWallDistance()));
             wallDistance.setBackWall(new Wall<Double>(CompassDirection.N, wallDistance.getNorthWallDistance()));
         } else if (heading == 270) {
-            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.E, wallDistance.getEastWallDistance()));
-            wallDistance.setBackWall(new Wall<Double>(CompassDirection.W, wallDistance.getWestWallDistance()));
+            wallDistance.setAheadWall(new Wall<Double>(CompassDirection.W, wallDistance.getEastWallDistance()));
+            wallDistance.setBackWall(new Wall<Double>(CompassDirection.E, wallDistance.getWestWallDistance()));
         } else {
             double angle = getLineAngle(heading);
             double tangentValue = Math.tan(angle);
             Wall<Double> wall;
 
             if (heading < 90) {
-                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.N);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.N);
                 wallDistance.setAheadWall(wall);
-                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.S);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.S);
                 wallDistance.setBackWall(wall);
             } else if (heading < 180) {
-                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.S);
-                wallDistance.setAheadWall(wall);
-                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.N);
-                wallDistance.setBackWall(wall);
-            } else if (heading < 270) {
                 wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.S);
                 wallDistance.setAheadWall(wall);
                 wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.N);
                 wallDistance.setBackWall(wall);
-            } else {
-                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.N);
-                wallDistance.setAheadWall(wall);
+            } else if (heading < 270) {
                 wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.S);
+                wallDistance.setAheadWall(wall);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.N);
+                wallDistance.setBackWall(wall);
+            } else {
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.W, CompassDirection.N);
+                wallDistance.setAheadWall(wall);
+                wall = getWall(x, y, mapHeight, mapWidth, tangentValue, CompassDirection.E, CompassDirection.S);
                 wallDistance.setBackWall(wall);
             }
         }
