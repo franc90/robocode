@@ -10,6 +10,7 @@ import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
+import robocode.TurnCompleteCondition;
 
 import java.io.File;
 
@@ -42,21 +43,22 @@ public class LearningRobot extends AdvancedRobot {
             RobocodeState state = robocodeStateHelper.create(this);
             MotionAction action = strategy.getAction(state);
             performAction(action);
+            waitFor(new TurnCompleteCondition(this));
         }
 
     }
 
     private void performAction(MotionAction action) {
         if (action.getStraightMotion().equals(StraightMotion.FORWARD)) {
-            ahead(properties.getDisplacementValue());
+            setAhead(properties.getDisplacementValue());
         } else {
-            back(properties.getDisplacementValue());
+            setBack(properties.getDisplacementValue());
         }
 
         if (action.getTurnMotion().equals(TurnMotion.LEFT)) {
-            turnLeft(properties.getTurnAngle());
+            setTurnLeft(properties.getTurnAngle());
         } else if (action.getTurnMotion().equals(TurnMotion.RIGHT)) {
-            turnRight(properties.getTurnAngle());
+            setTurnRight(properties.getTurnAngle());
         }
     }
 
