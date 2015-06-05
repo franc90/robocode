@@ -7,17 +7,20 @@ import pl.edu.agh.robocode.bot.state.distance.WallDistance;
 
 public class WallDistanceHelper {
 
+    double robotRadius;
+
     public WallDistance compute(RobotState robotState) {
+        robotRadius = computeRobotRadius(robotState);
         double x = robotState.getX();
         double y = robotState.getY();
         double mapHeight = robotState.getBattlefieldHeight();
         double mapWidth = robotState.getBattlefieldWidth();
 
         WallDistance wallDistance = new WallDistance(computeDistance(mapWidth, mapHeight, 0, 0));
-        wallDistance.setSouthWallDistance(y);
-        wallDistance.setWestWallDistance(x);
-        wallDistance.setNorthWallDistance(mapHeight - y);
-        wallDistance.setEastWallDistance(mapWidth - x);
+        wallDistance.setSouthWallDistance(subtractRobotRadius(y));
+        wallDistance.setWestWallDistance(subtractRobotRadius(x));
+        wallDistance.setNorthWallDistance(subtractRobotRadius(mapHeight - y));
+        wallDistance.setEastWallDistance(subtractRobotRadius(mapWidth - x));
 
         double heading = robotState.getHeading();
         if (heading == 0) {
@@ -63,6 +66,19 @@ public class WallDistanceHelper {
         return wallDistance;
     }
 
+    private double computeRobotRadius(RobotState robotState) {
+        double robotHeight = robotState.getHeight();
+        double robotWidth = robotState.getWidth();
+        double x = robotState.getX();
+        double y = robotState.getY();
+
+        return computeDistance(x, y, x + robotWidth / 2, y + robotHeight / 2);
+    }
+
+    private double subtractRobotRadius(double distance) {
+        return robotRadius > distance ? 0 : distance - robotRadius;
+    }
+
     private Wall<Double> getWall(double x, double y, double mapHeight, double mapWidth, double tanAlpha, CompassDirection verticalWall, CompassDirection horizontalWall) {
         double meetY;
         double meetX;
@@ -88,7 +104,7 @@ public class WallDistanceHelper {
             meetX = xMeetValue(tanAlpha, meetY, x, y);
         }
 
-        return new Wall<Double>(wallDirection, computeDistance(x, y, meetX, meetY));
+        return new Wall<Double>(wallDirection, subtractRobotRadius(computeDistance(x, y, meetX, meetY)));
     }
 
     private double computeDistance(double x, double y, double x2, double y2) {
