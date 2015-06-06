@@ -1,9 +1,11 @@
 package pl.edu.agh.robocode.bot;
 
 import piqle.agents.LoneAgent;
+import pl.edu.agh.robocode.bot.state.GunPosition;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.bot.state.enemy.Enemies;
 import pl.edu.agh.robocode.bot.state.enemy.Enemy;
+import pl.edu.agh.robocode.bot.state.helper.GunPositionerHelper;
 import pl.edu.agh.robocode.bot.state.helper.RobocodeStateHelper;
 import pl.edu.agh.robocode.bot.state.helper.StatePersistingHelper;
 import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
@@ -73,19 +75,15 @@ public class LearningRobot extends AdvancedRobot {
     private void findAndShootNearestEnemy() {
         Enemy nearest = enemies.getNearest();
         double bearing = nearest.getBearing();
-        if (bearing >= 0) {
-            turnGunRight(bearing);
-        } else {
-            turnGunLeft(-bearing);
+
+        GunPosition gunPosition = GunPositionerHelper.getGunPosition(bearing, getHeading(), getGunHeading());
+        if (gunPosition.getTurnSide() == GunPosition.TurnSide.RIGHT) {
+            turnGunRight(gunPosition.getAngle());
+        } else if (gunPosition.getTurnSide() == GunPosition.TurnSide.LEFT) {
+            turnGunLeft(gunPosition.getAngle());
         }
 
         fire(1);
-
-        if (bearing >= 0) {
-            turnGunLeft(bearing);
-        } else {
-            turnGunRight(-bearing);
-        }
     }
 
     @Override
