@@ -1,5 +1,7 @@
 package pl.edu.agh.robocode.bot.state.enemy;
 
+import pl.edu.agh.robocode.exception.NullValueException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +31,10 @@ public class Enemies {
             if (enemy.getDistance() < nearest.getDistance()) {
                 nearest = enemy;
             }
+        }
+
+        if (nearest == null) {
+            throw new NullValueException(Enemies.class + "null nearest enemy");
         }
 
         return nearest;

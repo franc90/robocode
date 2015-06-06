@@ -8,10 +8,10 @@ import pl.edu.agh.robocode.bot.state.enemy.Enemy;
 import pl.edu.agh.robocode.bot.state.helper.GunPositionerHelper;
 import pl.edu.agh.robocode.bot.state.helper.RobocodeStateHelper;
 import pl.edu.agh.robocode.bot.state.helper.StatePersistingHelper;
+import pl.edu.agh.robocode.exception.NullValueException;
 import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
 import pl.edu.agh.robocode.motion.MotionAction;
 import pl.edu.agh.robocode.motion.StraightMotion;
-import pl.edu.agh.robocode.motion.TurnMotion;
 import pl.edu.agh.robocode.motion.TurnSide;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
@@ -78,17 +78,21 @@ public class LearningRobot extends AdvancedRobot {
     }
 
     private void findAndShootNearestEnemy() {
-        Enemy nearest = enemies.getNearest();
-        double bearing = nearest.getBearing();
-
-        GunPosition gunPosition = GunPositionerHelper.getGunPosition(bearing, getHeading(), getGunHeading());
-        if (gunPosition.getTurnSide() == GunPosition.TurnSide.RIGHT) {
-            turnGunRight(gunPosition.getAngle());
-        } else if (gunPosition.getTurnSide() == GunPosition.TurnSide.LEFT) {
-            turnGunLeft(gunPosition.getAngle());
+        try {
+            Enemy nearest = enemies.getNearest();
+            double bearing = nearest.getBearing();
+            GunPosition gunPosition = GunPositionerHelper.getGunPosition(bearing, getHeading(), getGunHeading());
+            if (gunPosition.getTurnSide() == GunPosition.TurnSide.RIGHT) {
+                turnGunRight(gunPosition.getAngle());
+            } else if (gunPosition.getTurnSide() == GunPosition.TurnSide.LEFT) {
+                turnGunLeft(gunPosition.getAngle());
+            }
+            fire(1);
+        } catch (NullValueException ex) {
+            System.out.println("No nearest enemy found");
         }
 
-        fire(1);
+
     }
 
     @Override
@@ -106,6 +110,8 @@ public class LearningRobot extends AdvancedRobot {
 
         enemies.addEnemy(event.getName(), enemy);
     }
+
+
 
     public Enemies getEnemies() {
         return enemies;

@@ -1,6 +1,7 @@
 package pl.edu.agh.robocode.bot.state.distance;
 
 import pl.edu.agh.robocode.bot.state.distance.helper.NormalizedDistanceHelper;
+import pl.edu.agh.robocode.exception.NullValueException;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -117,7 +118,7 @@ public class WallDistance {
         }
 
         if (value == null) {
-            return null;
+            throw new NullValueException(WallDistance.class + ": null wall");
         }
 
         return new Wall<Double>(value.getKey(), value.getValue());

@@ -1,5 +1,6 @@
 package pl.edu.agh.robocode.bot.state.helper;
 
+import pl.edu.agh.robocode.exception.NullValueException;
 import robocode.RobocodeFileOutputStream;
 
 import java.io.*;
@@ -50,7 +51,7 @@ public class StatePersistingHelper<T extends Serializable> {
 
             T o =  (T) ois.readObject();
             if (o == null) {
-                throw new NullPointerException("CHUJ DUPA I KAMIENI KUPA\n" + dataFile.getPath());
+                throw new NullValueException(StatePersistingHelper.class + "no loaded object");
             }
             return o;
         } catch (IOException e) {
@@ -73,7 +74,8 @@ public class StatePersistingHelper<T extends Serializable> {
                 }
             }
         }
-        return null;
+
+        throw new NullValueException(StatePersistingHelper.class + "no loaded object");
     }
 
 }
