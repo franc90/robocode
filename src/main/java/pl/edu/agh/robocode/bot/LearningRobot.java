@@ -12,6 +12,7 @@ import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
 import pl.edu.agh.robocode.motion.MotionAction;
 import pl.edu.agh.robocode.motion.StraightMotion;
 import pl.edu.agh.robocode.motion.TurnMotion;
+import pl.edu.agh.robocode.motion.TurnSide;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
 import robocode.AdvancedRobot;
@@ -60,17 +61,20 @@ public class LearningRobot extends AdvancedRobot {
     }
 
     private void performAction(MotionAction action) {
-        if (action.getStraightMotion().equals(StraightMotion.FORWARD)) {
+
+        TurnSide turnSide = action.getTurnMotion().getTurnSide();
+        double angle = action.getTurnMotion().getAngle();
+        if (turnSide == TurnSide.LEFT) {
+            turnLeft(angle);
+        } else
+            turnRight(angle);
+
+        if (StraightMotion.FORWARD == action.getStraightMotion()) {
             ahead(properties.getDisplacementValue());
         } else {
             back(properties.getDisplacementValue());
         }
 
-        if (action.getTurnMotion().equals(TurnMotion.LEFT)) {
-            turnLeft(properties.getTurnAngle());
-        } else if (action.getTurnMotion().equals(TurnMotion.RIGHT)) {
-            turnRight(properties.getTurnAngle());
-        }
     }
 
     private void findAndShootNearestEnemy() {
