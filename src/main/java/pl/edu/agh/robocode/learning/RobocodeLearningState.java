@@ -1,6 +1,7 @@
 package pl.edu.agh.robocode.learning;
 
 import piqle.environment.AbstractState;
+import piqle.environment.ActionList;
 import piqle.environment.IEnvironment;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.bot.state.RobotState;
@@ -9,6 +10,8 @@ import pl.edu.agh.robocode.bot.state.distance.NormalizedDistance;
 import pl.edu.agh.robocode.bot.state.distance.Wall;
 import pl.edu.agh.robocode.bot.state.distance.WallDistance;
 import pl.edu.agh.robocode.bot.state.helper.WallDistanceHelper;
+
+import java.util.EnumSet;
 
 
 class RobocodeLearningState extends AbstractState {
@@ -45,14 +48,11 @@ class RobocodeLearningState extends AbstractState {
 
 
     RobocodeLearningState makeMove(RobocodeLearningAction action, double displacement) {
-        CompassDirection newDirection = action.calculateNewDirection(robocodeState.getRobotDirection());
+        CompassDirection newDirection = action.getDirection();
         RobotState oldRobotState = robocodeState.getRobotState();
-        double newHeading = action.calculateNewHeading(oldRobotState.getHeading());
-        double normalizedHeading = newHeading % 90;
-        double yDisplacement = displacement * Math.cos(normalizedHeading) * signForDirection(newDirection);
-        double xDisplacement = displacement * Math.sin(normalizedHeading) * signForHeadingAndDirection(newHeading, newDirection);
-        double newY = oldRobotState.getY() + yDisplacement;
-        double newX = oldRobotState.getX() + xDisplacement;
+        double newHeading = action.getTargetHeading();
+        double newY = oldRobotState.getY() + displacement * action.getYDisplacementSign();
+        double newX = oldRobotState.getX() + displacement * action.getXDisplacementSign();
         RobotState newRobotState = new RobotState.Builder()
                                                 .fromRobotState(oldRobotState)
                                                 .withHeading(newHeading)
@@ -64,25 +64,10 @@ class RobocodeLearningState extends AbstractState {
         newRobocodeState.setRobotDirection(newDirection);
         newRobocodeState.setRobotState(newRobotState);
         newRobocodeState.setWallDistance(newWallDistance);
-        return new RobocodeLearningState(getEnvironment(), newRobocodeState);
+            return new RobocodeLearningState(getEnvironment(), newRobocodeState);
     }
 
 
-    private double signForDirection(CompassDirection newDirection) {
-        return CompassDirection.N == newDirection ? 1.0 : -1.0;
-    }
-
-    private double signForHeadingAndDirection(double newHeading, CompassDirection direction) {
-        return CompassDirection.N == direction ? signForNorthAndHeading(newHeading) : signForSouthAndHeading(newHeading);
-    }
-
-    private double signForNorthAndHeading(double heading) {
-        return heading - 180 >= 0 ? -1.0 : 1.0;
-    }
-
-    private double signForSouthAndHeading(double heading) {
-        return heading - 180 >= 0 ? 1.0 : -1.0;
-    }
 
     NormalizedDistance getDistanceToWall() {
         return distanceToWall;
@@ -92,12 +77,43 @@ class RobocodeLearningState extends AbstractState {
         return robotDirection;
     }
 
+    ActionList getAvailableActions() {
+        if(isWallToClose()) {
+                EnumSet<RobocodeLearningAction> all = EnumSet.allOf(RobocodeLearningAction.class);
+                all.remove(RobocodeLearningAction.forDirection(robotDirection));
+                return fromEnumSet(all);
+        }
+        else if(isWallToFar()) {
+            RobocodeLearningAction action = RobocodeLearningAction.forDirection(robotDirection);
+            ActionList actionList = new ActionList(this);
+            actionList.add(action);
+            return actionList;
+        }
+        return fromEnumSet(EnumSet.allOf(RobocodeLearningAction.class));
+    }
+
+    private ActionList fromEnumSet(EnumSet<RobocodeLearningAction> set) {
+        ActionList actionList = new ActionList(this);
+        for (RobocodeLearningAction robocodeLearningAction : set) {
+            actionList.add(robocodeLearningAction);
+        }
+        return actionList;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public boolean isStateFinal() {
         return robocodeState.getRobotState().getEnergy() <= 0.0;
+    }
+
+    boolean isWallToClose() {
+        return distanceToWall == NormalizedDistance.SMALL;
+    }
+
+    boolean isWallToFar() {
+        return distanceToWall == NormalizedDistance.BIG;
     }
 
     public static class Builder {

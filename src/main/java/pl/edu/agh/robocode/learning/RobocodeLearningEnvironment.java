@@ -2,13 +2,15 @@ package pl.edu.agh.robocode.learning;
 
 import piqle.environment.ActionList;
 import piqle.environment.IState;
+import pl.edu.agh.robocode.bot.state.distance.NormalizedDistance;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearningState, RobocodeLearningAction> {
 
 
-    private static final double REWARD = 10.0;
-    private static final double PUNISHMENT = -10.0;
+    private static final double DISTANCE_REWARD = 10.0;
+    private static final double DIRECTION_REWARD = 5.0;
+    private static final double PUNISHMENT = -15.0;
 
     private final RobocodeLearningState defaultInitalState;
     private final EnvironmentProperties properties;
@@ -23,6 +25,10 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
 
     @Override
     protected ActionList getActionsList(RobocodeLearningState state) {
+        return state.getAvailableActions();
+    }
+
+    private ActionList allActions(RobocodeLearningState state) {
         ActionList actionList = new ActionList(state);
         for (RobocodeLearningAction robocodeLearningAction : RobocodeLearningAction.values()) {
             actionList.add(robocodeLearningAction);
@@ -37,11 +43,11 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
 
     @Override
     protected double calculateReward(RobocodeLearningState oldState, RobocodeLearningState newState, RobocodeLearningAction action) {
-        return newState.getDistanceToWall().compareTo(oldState.getDistanceToWall()) < 0 ? REWARD : rewardForDirection(oldState, newState);
+        return newState.getDistanceToWall().compareTo(oldState.getDistanceToWall()) < 0 ? DISTANCE_REWARD : rewardForDirection(oldState, newState);
     }
 
     private double rewardForDirection(RobocodeLearningState oldState, RobocodeLearningState newState) {
-        return oldState.getRobotDirection() != newState.getRobotDirection() ? REWARD : PUNISHMENT;
+        return oldState.getRobotDirection() != newState.getRobotDirection() ? DIRECTION_REWARD : PUNISHMENT;
     }
 
     @Override

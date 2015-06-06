@@ -13,7 +13,7 @@ import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 public class RobocodeLearningStrategy implements RobocodeStrategy {
 
-    private static final int ITERATIONS = 100;
+    private static final int ITERATIONS = 50;
     private final LoneAgent agent;
     private final QLearningSelector algo;
     private final OnePlayerReferee referee;
@@ -43,10 +43,12 @@ public class RobocodeLearningStrategy implements RobocodeStrategy {
     }
 
     private MotionAction createMotionAction(RobocodeState state, RobocodeLearningAction action) {
-        StraightMotion straightMotion = action.getStraightMotion();
-        double angle = action.calculateNewHeading(state.getRobotState().getHeading());
-        System.out.println(angle);
-        TurnMotion turnMotion = new TurnMotion(angle, TurnSide.LEFT);
+        StraightMotion straightMotion = StraightMotion.FORWARD;
+        double actualHeading = state.getRobotState().getHeading();
+        double angle = HeadingHelper.getMinDifference(actualHeading, action.getTargetHeading());
+        TurnSide turnSide = HeadingHelper.getTurnSide(actualHeading, action.getTargetHeading());
+        System.out.println(actualHeading+"|"+angle+"|"+turnSide);
+        TurnMotion turnMotion = new TurnMotion(angle, turnSide);
         return new MotionAction(straightMotion, turnMotion);
     }
 
