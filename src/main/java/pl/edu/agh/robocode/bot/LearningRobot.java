@@ -6,6 +6,7 @@ import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
 import pl.edu.agh.robocode.motion.MotionAction;
 import pl.edu.agh.robocode.motion.StraightMotion;
 import pl.edu.agh.robocode.motion.TurnMotion;
+import pl.edu.agh.robocode.motion.TurnSide;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
 import robocode.AdvancedRobot;
@@ -49,16 +50,18 @@ public class LearningRobot extends AdvancedRobot {
     }
 
     private void performAction(MotionAction action) {
-        if (action.getStraightMotion().equals(StraightMotion.FORWARD)) {
-            setAhead(properties.getDisplacementValue());
-        } else {
-            setBack(properties.getDisplacementValue());
+
+        TurnMotion turnMotion = action.getTurnMotion();
+        if (turnMotion.getTurnSide() == TurnSide.LEFT) {
+            turnLeft(turnMotion.getAngle());
+        } else  {
+            turnRight(turnMotion.getAngle());
         }
 
-        if (action.getTurnMotion().equals(TurnMotion.LEFT)) {
-            setTurnLeft(properties.getTurnAngle());
-        } else if (action.getTurnMotion().equals(TurnMotion.RIGHT)) {
-            setTurnRight(properties.getTurnAngle());
+        if (action.getStraightMotion().equals(StraightMotion.FORWARD)) {
+            ahead(properties.getDisplacementValue());
+        } else {
+            back(properties.getDisplacementValue());
         }
     }
 

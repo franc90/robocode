@@ -215,6 +215,24 @@ public class RobotState {
             return this;
         }
 
+        public Builder fromRobotState(RobotState robot) {
+            withEnergy(robot.getEnergy());
+            withX(robot.getX());
+            withY(robot.getY());
+            withHeight(robot.getHeight());
+            withWidth(robot.getWidth());
+            withVelocity(robot.getVelocity());
+            withHeading(robot.getHeading());
+            withGunHeading(robot.getGunHeading());
+            withRadarHeading(robot.getRadarHeading());
+            withBattlefieldHeight(robot.getBattlefieldHeight());
+            withBattlefieldWidth(robot.getBattlefieldWidth());
+            withLeftOpponentsNumber(robot.getLeftOpponentsNumber());
+            withTurnNumber(robot.getTurnNumber());
+            withRoundNumber(robot.getRoundNumber());
+            return this;
+        }
+
         public RobotState build() {
             return new RobotState(energy, x, y, height, width, velocity, heading, gunHeading, radarHeading, battlefieldHeight, battlefieldWidth, leftOpponentsNumber, turnNumber, roundNumber);
         }

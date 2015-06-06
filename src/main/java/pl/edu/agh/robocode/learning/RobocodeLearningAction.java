@@ -1,34 +1,47 @@
 package pl.edu.agh.robocode.learning;
 
 import piqle.environment.IAction;
-import pl.edu.agh.robocode.motion.MotionAction;
+import pl.edu.agh.robocode.bot.state.distance.CompassDirection;
 import pl.edu.agh.robocode.motion.StraightMotion;
-import pl.edu.agh.robocode.motion.TurnMotion;
 
 enum RobocodeLearningAction implements IAction {
 
-    FORWARD(StraightMotion.FORWARD, TurnMotion.NONE),
-    BACKWARD(StraightMotion.BACKWARD, TurnMotion.NONE),
-    FORWARD_LEFT(StraightMotion.FORWARD, TurnMotion.LEFT),
-    FORWARD_RIGHT(StraightMotion.FORWARD, TurnMotion.RIGHT),
-    BACKWARD_LEFT(StraightMotion.BACKWARD, TurnMotion.LEFT),
-    BACKWARD_RIGHT(StraightMotion.FORWARD, TurnMotion.RIGHT);
+    AHEAD(StraightMotion.FORWARD) {
+        @Override
+        double calculateNewHeading(double oldHeading) {
+            return oldHeading;
+        }
+
+        @Override
+        CompassDirection calculateNewDirection(CompassDirection oldDirection) {
+            return oldDirection;
+        }
+    },
+
+    TURN_BACK(StraightMotion.BACKWARD) {
+        @Override
+        double calculateNewHeading(double oldHeading) {
+            return (oldHeading + 180.0) % 180;
+        }
+
+        @Override
+        CompassDirection calculateNewDirection(CompassDirection oldDirection) {
+            return oldDirection.opposite();
+        }
+    }
+
+
+    ;
 
     private final StraightMotion straightMotion;
-    private final TurnMotion turnMotion;
 
-    RobocodeLearningAction(StraightMotion straightMotion, TurnMotion turnMotion) {
+    RobocodeLearningAction(StraightMotion straightMotion) {
         this.straightMotion = straightMotion;
-        this.turnMotion = turnMotion;
     }
 
-    public StraightMotion getStraightMotion() {
-        return straightMotion;
-    }
+    abstract double calculateNewHeading(double oldHeading);
 
-    public TurnMotion getTurnMotion() {
-        return turnMotion;
-    }
+    abstract CompassDirection calculateNewDirection(CompassDirection oldDirection);
 
     public Object copy() {
         return this;
@@ -42,8 +55,7 @@ enum RobocodeLearningAction implements IAction {
         return new double[0];
     }
 
-    public MotionAction toMotionAction() {
-        return new MotionAction(straightMotion, turnMotion);
+    StraightMotion getStraightMotion() {
+        return straightMotion;
     }
-
 }

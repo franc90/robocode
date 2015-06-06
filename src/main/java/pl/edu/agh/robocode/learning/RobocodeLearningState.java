@@ -3,22 +3,29 @@ package pl.edu.agh.robocode.learning;
 import piqle.environment.AbstractState;
 import piqle.environment.IEnvironment;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
-import pl.edu.agh.robocode.motion.StraightMotion;
+import pl.edu.agh.robocode.bot.state.RobotState;
+import pl.edu.agh.robocode.bot.state.distance.CompassDirection;
+import pl.edu.agh.robocode.bot.state.distance.NormalizedDistance;
+import pl.edu.agh.robocode.bot.state.distance.Wall;
+import pl.edu.agh.robocode.bot.state.distance.WallDistance;
+import pl.edu.agh.robocode.bot.state.helper.WallDistanceHelper;
 
 
 class RobocodeLearningState extends AbstractState {
 
+    private final WallDistanceHelper wallDistanceHelper = new WallDistanceHelper();
     private final RobocodeState robocodeState;
-    private double distanceToWall;
+    private final NormalizedDistance distanceToWall;
+    private final CompassDirection robotDirection;
+    private final CompassDirection wallDirection;
 
     private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
         super(environment);
         this.robocodeState = robocodeState;
-        distanceToWall = robocodeState.getWallDistance().getAheadWallDistance();
-    }
-
-    double getDistanceToWall() {
-        return distanceToWall;
+        Wall<NormalizedDistance> wall = robocodeState.getWallDistance().getNormalizedNearestWallDistance();
+        distanceToWall = wall.getDistance();
+        wallDirection = wall.getDirection();
+        robotDirection = robocodeState.getRobotDirection();
     }
 
     @Override
@@ -36,36 +43,54 @@ class RobocodeLearningState extends AbstractState {
         return new double[0]; //used only for neural networks
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        RobocodeLearningState that = (RobocodeLearningState) o;
-
-        if (Double.compare(that.distanceToWall, distanceToWall) != 0) return false;
-        return !(robocodeState != null ? !robocodeState.equals(that.robocodeState) : that.robocodeState != null);
-
+    RobocodeLearningState makeMove(RobocodeLearningAction action, double displacement) {
+        CompassDirection newDirection = action.calculateNewDirection(robocodeState.getRobotDirection());
+        RobotState oldRobotState = robocodeState.getRobotState();
+        double newHeading = action.calculateNewHeading(oldRobotState.getHeading());
+        double normalizedHeading = newHeading % 90;
+        double yDisplacement = displacement * Math.cos(normalizedHeading) * signForDirection(newDirection);
+        double xDisplacement = displacement * Math.sin(normalizedHeading) * signForHeadingAndDirection(newHeading, newDirection);
+        double newY = oldRobotState.getY() + yDisplacement;
+        double newX = oldRobotState.getX() + xDisplacement;
+        RobotState newRobotState = new RobotState.Builder()
+                                                .fromRobotState(oldRobotState)
+                                                .withHeading(newHeading)
+                                                .withY(newY)
+                                                .withX(newX)
+                                                .build();
+        WallDistance newWallDistance = wallDistanceHelper.compute(newRobotState);
+        RobocodeState newRobocodeState = new RobocodeState();
+        newRobocodeState.setRobotDirection(newDirection);
+        newRobocodeState.setRobotState(newRobotState);
+        newRobocodeState.setWallDistance(newWallDistance);
+        return new RobocodeLearningState(getEnvironment(), newRobocodeState);
     }
 
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = robocodeState != null ? robocodeState.hashCode() : 0;
-        temp = Double.doubleToLongBits(distanceToWall);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+
+    private double signForDirection(CompassDirection newDirection) {
+        return CompassDirection.N == newDirection ? 1.0 : -1.0;
     }
 
-    public void makeMove(RobocodeLearningAction action, double displacementValue) {
-        distanceToWall = calculateMove(action.getStraightMotion(), displacementValue);
+    private double signForHeadingAndDirection(double newHeading, CompassDirection direction) {
+        return CompassDirection.N == direction ? signForNorthAndHeading(newHeading) : signForSouthAndHeading(newHeading);
     }
 
-    private double calculateMove(StraightMotion straightMotion, double displacementValue) {
-        return StraightMotion.FORWARD == straightMotion ? displacementValue : -displacementValue;
+    private double signForNorthAndHeading(double heading) {
+        return heading - 180 >= 0 ? -1.0 : 1.0;
     }
 
+    private double signForSouthAndHeading(double heading) {
+        return heading - 180 >= 0 ? 1.0 : -1.0;
+    }
+
+    NormalizedDistance getDistanceToWall() {
+        return distanceToWall;
+    }
+
+    CompassDirection getRobotDirection() {
+        return robotDirection;
+    }
 
     public static Builder builder() {
         return new Builder();
@@ -76,7 +101,8 @@ class RobocodeLearningState extends AbstractState {
     }
 
     public static class Builder {
-        private IEnvironment environment; private RobocodeState robocodeState;
+        private IEnvironment environment;
+        private RobocodeState robocodeState;
 
         public Builder withEnvironment(IEnvironment environment) {
             this.environment = environment;
@@ -92,5 +118,6 @@ class RobocodeLearningState extends AbstractState {
             return new RobocodeLearningState(environment, robocodeState);
         }
     }
+
 
 }

@@ -32,14 +32,16 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
 
     @Override
     protected RobocodeLearningState nextState(RobocodeLearningState state, RobocodeLearningAction action) {
-        RobocodeLearningState newState = state.copy();
-        newState.makeMove(action, properties.getDisplacementValue());
-        return newState;
+        return state.makeMove(action, properties.getDisplacementValue());
     }
 
     @Override
     protected double calculateReward(RobocodeLearningState oldState, RobocodeLearningState newState, RobocodeLearningAction action) {
-        return newState.getDistanceToWall() < oldState.getDistanceToWall() ? REWARD : PUNISHMENT;
+        return newState.getDistanceToWall().compareTo(oldState.getDistanceToWall()) < 0 ? REWARD : rewardForDirection(oldState, newState);
+    }
+
+    private double rewardForDirection(RobocodeLearningState oldState, RobocodeLearningState newState) {
+        return oldState.getRobotDirection() != newState.getRobotDirection() ? REWARD : PUNISHMENT;
     }
 
     @Override

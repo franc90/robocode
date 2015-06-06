@@ -1,8 +1,20 @@
 package pl.edu.agh.robocode.motion;
 
-public enum TurnMotion {
+public class TurnMotion {
 
-    LEFT,
-    RIGHT,
-    NONE;
+    private final double angle;
+    private final TurnSide turnSide;
+
+    public TurnMotion(double angle, TurnSide turnSide) {
+        this.angle = angle;
+        this.turnSide = turnSide;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public TurnSide getTurnSide() {
+        return turnSide;
+    }
 }
