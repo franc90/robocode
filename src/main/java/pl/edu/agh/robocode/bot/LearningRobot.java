@@ -48,6 +48,7 @@ public class LearningRobot extends AdvancedRobot {
 
         while (true) {
             RobocodeState state = robocodeStateHelper.create(this);
+            enemies.clear();
             MotionAction action = strategy.getAction(state);
             performAction(action);
             turnRadarLeft(360);
