@@ -135,5 +135,24 @@ class RobocodeLearningState extends AbstractState {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        RobocodeLearningState that = (RobocodeLearningState) o;
+
+        if (distanceToWall != that.distanceToWall) return false;
+        if (robotDirection != that.robotDirection) return false;
+        return wallDirection == that.wallDirection;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = distanceToWall != null ? distanceToWall.hashCode() : 0;
+        result = 31 * result + (robotDirection != null ? robotDirection.hashCode() : 0);
+        result = 31 * result + (wallDirection != null ? wallDirection.hashCode() : 0);
+        return result;
+    }
 }
