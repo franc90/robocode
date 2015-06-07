@@ -13,14 +13,14 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
     private static final double PUNISHMENT = -15.0;
 
     private final RobocodeLearningState defaultInitalState;
-    private final EnvironmentProperties properties;
+    private final double displacement;
 
     public RobocodeLearningEnvironment(EnvironmentProperties properties) {
         this.defaultInitalState = RobocodeLearningState.builder()
                 .withEnvironment(this)
                 .withRobocodeState(properties.getInitialState())
                 .build();
-        this.properties = properties;
+        this.displacement = properties.getDisplacementValue();
     }
 
     @Override
@@ -28,17 +28,9 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
         return state.getAvailableActions();
     }
 
-    private ActionList allActions(RobocodeLearningState state) {
-        ActionList actionList = new ActionList(state);
-        for (RobocodeLearningAction robocodeLearningAction : RobocodeLearningAction.values()) {
-            actionList.add(robocodeLearningAction);
-        }
-        return actionList;
-    }
-
     @Override
     protected RobocodeLearningState nextState(RobocodeLearningState state, RobocodeLearningAction action) {
-        return state.makeMove(action, properties.getDisplacementValue());
+        return state.makeMove(action, displacement);
     }
 
     @Override

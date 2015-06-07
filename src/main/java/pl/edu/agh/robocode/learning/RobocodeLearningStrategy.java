@@ -3,7 +3,7 @@ package pl.edu.agh.robocode.learning;
 import piqle.agents.LoneAgent;
 import piqle.algorithms.QLearningSelector;
 import piqle.referees.OnePlayerReferee;
-import pl.edu.agh.robocode.bot.RobocodeStrategy;
+import pl.edu.agh.robocode.bot.strategy.RobocodeStrategy;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.motion.MotionAction;
 import pl.edu.agh.robocode.motion.StraightMotion;
@@ -15,15 +15,15 @@ public class RobocodeLearningStrategy implements RobocodeStrategy {
 
     private static final int ITERATIONS = 50;
     private final LoneAgent agent;
-    private final QLearningSelector algo;
+    private final QLearningSelector selector;
     private final OnePlayerReferee referee;
     private double epsilon=0.5;
 
-    public RobocodeLearningStrategy(EnvironmentProperties properties) {
-        algo = new QLearningSelector();
-        algo.setGamma(1.0);
-        algo.setEpsilon(epsilon);
-        agent = new LoneAgent(new RobocodeLearningEnvironment(properties), algo);
+    RobocodeLearningStrategy(EnvironmentProperties properties, QLearningSelector selector) {
+        this.selector = selector;
+        this.selector.setGamma(1.0);
+        this.selector.setEpsilon(epsilon);
+        agent = new LoneAgent(new RobocodeLearningEnvironment(properties), this.selector);
         agent.enableLearning();
         referee = new OnePlayerReferee(agent);
         referee.setMaxIter(ITERATIONS);
@@ -35,11 +35,15 @@ public class RobocodeLearningStrategy implements RobocodeStrategy {
                 .withRobocodeState(state)
                 .build();
         referee.episode(learningState);
-        RobocodeLearningAction action = (RobocodeLearningAction) algo.bestAction(learningState);
+        RobocodeLearningAction action = (RobocodeLearningAction) selector.bestAction(learningState);
         epsilon *= 0.99999;
-        algo.setEpsilon(epsilon);
+        selector.setEpsilon(epsilon);
         System.out.println("BEST ACTION: "+action);
         return  createMotionAction(state, action);
+    }
+
+    QLearningSelector getSelector() {
+        return selector;
     }
 
     private MotionAction createMotionAction(RobocodeState state, RobocodeLearningAction action) {

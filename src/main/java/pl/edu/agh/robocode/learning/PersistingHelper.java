@@ -1,15 +1,15 @@
-package pl.edu.agh.robocode.bot.state.helper;
+package pl.edu.agh.robocode.learning;
 
 import pl.edu.agh.robocode.exception.NullValueException;
 import robocode.RobocodeFileOutputStream;
 
 import java.io.*;
 
-public class StatePersistingHelper<T extends Serializable> {
+class PersistingHelper<T extends Serializable> {
 
     private File dataFile;
 
-    public StatePersistingHelper(File dataFile) {
+    public PersistingHelper(File dataFile) {
         this.dataFile = dataFile;
     }
 
@@ -51,7 +51,7 @@ public class StatePersistingHelper<T extends Serializable> {
 
             T o =  (T) ois.readObject();
             if (o == null) {
-                throw new NullValueException(StatePersistingHelper.class + "no loaded object");
+                throw new NullValueException(PersistingHelper.class + "no loaded object");
             }
             return o;
         } catch (IOException e) {
@@ -75,7 +75,7 @@ public class StatePersistingHelper<T extends Serializable> {
             }
         }
 
-        throw new NullValueException(StatePersistingHelper.class + "no loaded object");
+        throw new NullValueException(PersistingHelper.class + "no loaded object");
     }
 
 }

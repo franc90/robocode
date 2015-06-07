@@ -16,8 +16,8 @@ import java.util.EnumSet;
 
 class RobocodeLearningState extends AbstractState {
 
-    private final WallDistanceHelper wallDistanceHelper = new WallDistanceHelper();
-    private final RobocodeState robocodeState;
+    private final transient WallDistanceHelper wallDistanceHelper = new WallDistanceHelper();
+    private final transient RobocodeState robocodeState;
     private final NormalizedDistance distanceToWall;
     private final CompassDirection robotDirection;
     private final CompassDirection wallDirection;
@@ -64,10 +64,8 @@ class RobocodeLearningState extends AbstractState {
         newRobocodeState.setRobotDirection(newDirection);
         newRobocodeState.setRobotState(newRobotState);
         newRobocodeState.setWallDistance(newWallDistance);
-            return new RobocodeLearningState(getEnvironment(), newRobocodeState);
+        return new RobocodeLearningState(getEnvironment(), newRobocodeState);
     }
-
-
 
     NormalizedDistance getDistanceToWall() {
         return distanceToWall;

@@ -1,21 +1,24 @@
 package pl.edu.agh.robocode.bot;
 
-import piqle.agents.LoneAgent;
 import pl.edu.agh.robocode.bot.state.GunPosition;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.bot.state.enemy.Enemies;
 import pl.edu.agh.robocode.bot.state.enemy.Enemy;
 import pl.edu.agh.robocode.bot.state.helper.GunPositionerHelper;
 import pl.edu.agh.robocode.bot.state.helper.RobocodeStateHelper;
-import pl.edu.agh.robocode.bot.state.helper.StatePersistingHelper;
+import pl.edu.agh.robocode.bot.strategy.RobocodeStrategyDataStore;
+import pl.edu.agh.robocode.bot.strategy.RobocodeStrategy;
 import pl.edu.agh.robocode.exception.NullValueException;
 import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
+import pl.edu.agh.robocode.learning.RobocodeLearningStrategyDataStore;
 import pl.edu.agh.robocode.motion.MotionAction;
 import pl.edu.agh.robocode.motion.StraightMotion;
 import pl.edu.agh.robocode.motion.TurnSide;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
 import robocode.AdvancedRobot;
+import robocode.BattleEndedEvent;
+import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 
 import java.io.File;
@@ -24,24 +27,24 @@ public class LearningRobot extends AdvancedRobot {
 
     private static final String STATE_FILE = "robotState";
 
-    private RobocodeStrategy strategy;
+    private RobocodeLearningStrategy strategy;
 
     private RobocodeStateHelper robocodeStateHelper = new RobocodeStateHelper();
 
     private EnvironmentPropertiesHelper environmentPropertiesHelper = new EnvironmentPropertiesHelper();
 
-    private StatePersistingHelper<LoneAgent> loneAgentPersistHelper;
-
     private EnvironmentProperties properties;
+
+    private RobocodeStrategyDataStore<RobocodeLearningStrategy> strategyDataStore;
 
     private Enemies enemies = new Enemies();
 
     @Override
     public void run() {
         File dataFile = getDataFile(STATE_FILE);
-        loneAgentPersistHelper = new StatePersistingHelper<LoneAgent>(dataFile);
+        strategyDataStore = new RobocodeLearningStrategyDataStore(dataFile);
         properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
-        strategy = new RobocodeLearningStrategy(properties);
+        strategy = strategyDataStore.load(properties);
 
         if (getRoundNum() > 0) {
 //            roboState = helper.load();
@@ -99,6 +102,16 @@ public class LearningRobot extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent event) {
         addEnemy(event);
 //        fire(1);
+    }
+
+    @Override
+    public void onRoundEnded(RoundEndedEvent event) {
+        strategyDataStore.save(strategy);
+    }
+
+    @Override
+    public void onBattleEnded(BattleEndedEvent event) {
+        strategyDataStore.save(strategy);
     }
 
     private void addEnemy(ScannedRobotEvent event) {
