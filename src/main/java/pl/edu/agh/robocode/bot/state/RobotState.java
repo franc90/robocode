@@ -1,7 +1,7 @@
 package pl.edu.agh.robocode.bot.state;
 
 
-import robocode.Robot;
+import pl.edu.agh.robocode.bot.LearningRobot;
 
 public class RobotState {
 
@@ -33,7 +33,15 @@ public class RobotState {
 
     private final long roundNumber;
 
-    private RobotState(double energy, double x, double y, double height, double width, double velocity, double heading, double gunHeading, double radarHeading, double battlefieldHeight, double battlefieldWidth, int leftOpponentsNumber, long turnNumber, long roundNumber) {
+    private final int hitByBullet;
+
+    private final int hitOtherRobot;
+
+    private final int hitWall;
+
+    public RobotState(double energy, double x, double y, double height, double width, double velocity, double heading,
+                      double gunHeading, double radarHeading, double battlefieldHeight, double battlefieldWidth,
+                      int leftOpponentsNumber, long turnNumber, long roundNumber, int hitByBullet, int hitOtherRobot, int hitWall) {
         this.energy = energy;
         this.x = x;
         this.y = y;
@@ -48,6 +56,9 @@ public class RobotState {
         this.leftOpponentsNumber = leftOpponentsNumber;
         this.turnNumber = turnNumber;
         this.roundNumber = roundNumber;
+        this.hitByBullet = hitByBullet;
+        this.hitOtherRobot = hitOtherRobot;
+        this.hitWall = hitWall;
     }
 
     public double getEnergy() {
@@ -106,6 +117,18 @@ public class RobotState {
         return roundNumber;
     }
 
+    public int getHitByBullet() {
+        return hitByBullet;
+    }
+
+    public int getHitOtherRobot() {
+        return hitOtherRobot;
+    }
+
+    public int getHitWall() {
+        return hitWall;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -126,6 +149,9 @@ public class RobotState {
         private int leftOpponentsNumber;
         private long turnNumber;
         private long roundNumber;
+        private int hitByBullet;
+        private int hitOtherRobot;
+        private int hitWall;
 
         public Builder withEnergy(double energy) {
             this.energy = energy;
@@ -197,7 +223,22 @@ public class RobotState {
             return this;
         }
 
-        public Builder fromRobot(Robot robot) {
+        public Builder withHitWall(int hitWall) {
+            this.hitWall = hitWall;
+            return this;
+        }
+
+        public Builder withHitOtherRobot(int hitOtherRobot) {
+            this.hitOtherRobot = hitOtherRobot;
+            return this;
+        }
+
+        public Builder withHitByBullet(int hitByBullet) {
+            this.hitByBullet = hitByBullet;
+            return this;
+        }
+
+        public Builder fromRobot(LearningRobot robot) {
             withEnergy(robot.getEnergy());
             withX(robot.getX());
             withY(robot.getY());
@@ -212,6 +253,9 @@ public class RobotState {
             withLeftOpponentsNumber(robot.getOthers());
             withTurnNumber(robot.getTime());
             withRoundNumber(robot.getRoundNum());
+            withHitByBullet(robot.getCollisions().getHitByBullet());
+            withHitOtherRobot(robot.getCollisions().getHitOtherRobot());
+            withHitWall(robot.getCollisions().getHitWall());
             return this;
         }
 
@@ -230,11 +274,15 @@ public class RobotState {
             withLeftOpponentsNumber(robot.getLeftOpponentsNumber());
             withTurnNumber(robot.getTurnNumber());
             withRoundNumber(robot.getRoundNumber());
+            withHitByBullet(robot.getHitByBullet());
+            withHitOtherRobot(robot.getHitOtherRobot());
+            withHitWall(robot.getHitWall());
             return this;
         }
 
         public RobotState build() {
-            return new RobotState(energy, x, y, height, width, velocity, heading, gunHeading, radarHeading, battlefieldHeight, battlefieldWidth, leftOpponentsNumber, turnNumber, roundNumber);
+            return new RobotState(energy, x, y, height, width, velocity, heading, gunHeading, radarHeading, battlefieldHeight,
+                    battlefieldWidth, leftOpponentsNumber, turnNumber, roundNumber, hitByBullet, hitOtherRobot, hitWall);
         }
     }
 }

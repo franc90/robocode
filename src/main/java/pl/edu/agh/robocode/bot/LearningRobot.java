@@ -1,5 +1,6 @@
 package pl.edu.agh.robocode.bot;
 
+import pl.edu.agh.robocode.bot.state.Collisions;
 import pl.edu.agh.robocode.bot.state.GunPosition;
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 import pl.edu.agh.robocode.bot.state.enemy.Enemies;
@@ -7,7 +8,6 @@ import pl.edu.agh.robocode.bot.state.enemy.Enemy;
 import pl.edu.agh.robocode.bot.state.helper.GunPositionerHelper;
 import pl.edu.agh.robocode.bot.state.helper.RobocodeStateHelper;
 import pl.edu.agh.robocode.bot.strategy.RobocodeStrategyDataStore;
-import pl.edu.agh.robocode.bot.strategy.RobocodeStrategy;
 import pl.edu.agh.robocode.exception.NullValueException;
 import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
 import pl.edu.agh.robocode.learning.RobocodeLearningStrategyDataStore;
@@ -16,10 +16,7 @@ import pl.edu.agh.robocode.motion.StraightMotion;
 import pl.edu.agh.robocode.motion.TurnSide;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 import pl.edu.agh.robocode.properties.helper.EnvironmentPropertiesHelper;
-import robocode.AdvancedRobot;
-import robocode.BattleEndedEvent;
-import robocode.RoundEndedEvent;
-import robocode.ScannedRobotEvent;
+import robocode.*;
 
 import java.io.File;
 
@@ -39,6 +36,8 @@ public class LearningRobot extends AdvancedRobot {
 
     private Enemies enemies = new Enemies();
 
+    private Collisions collisions = new Collisions();
+
     @Override
     public void run() {
         File dataFile = getDataFile(STATE_FILE);
@@ -46,13 +45,10 @@ public class LearningRobot extends AdvancedRobot {
         properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
         strategy = strategyDataStore.load(properties);
 
-        if (getRoundNum() > 0) {
-//            roboState = helper.load();
-        }
-
         while (true) {
             RobocodeState state = robocodeStateHelper.create(this);
             enemies.clear();
+            collisions.clear();
             MotionAction action = strategy.getAction(state);
             performAction(action);
             turnRadarLeft(360);
@@ -101,7 +97,6 @@ public class LearningRobot extends AdvancedRobot {
     @Override
     public void onScannedRobot(ScannedRobotEvent event) {
         addEnemy(event);
-//        fire(1);
     }
 
     @Override
@@ -114,6 +109,21 @@ public class LearningRobot extends AdvancedRobot {
         strategyDataStore.save(strategy);
     }
 
+    @Override
+    public void onHitByBullet(HitByBulletEvent event) {
+        collisions.hitByBullet();
+    }
+
+    @Override
+    public void onHitRobot(HitRobotEvent event) {
+        collisions.hitOtherRobot();
+    }
+
+    @Override
+    public void onHitWall(HitWallEvent event) {
+        collisions.hitWall();
+    }
+
     private void addEnemy(ScannedRobotEvent event) {
         Enemy enemy = Enemy
                 .builder()
@@ -124,7 +134,9 @@ public class LearningRobot extends AdvancedRobot {
         enemies.addEnemy(event.getName(), enemy);
     }
 
-
+    public Collisions getCollisions() {
+        return collisions;
+    }
 
     public Enemies getEnemies() {
         return enemies;
