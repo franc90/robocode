@@ -5,11 +5,15 @@ import pl.edu.agh.robocode.motion.TurnSide;
 class HeadingHelper {
 
     static double getMinDifference(double actual, double target) {
-        return Math.min((actual - target) < 0 ? actual - target + 360 : actual - target, (target - actual) < 0 ? target - actual + 360 : target - actual);
+        double actualMinusTarget = actual - target;
+        double targetMinusActual = target - actual;
+        return Math.min(Double.compare(actualMinusTarget, 0) < 0 ? actualMinusTarget + 360 : actualMinusTarget,
+                        Double.compare(targetMinusActual, 0) < 0 ? targetMinusActual + 360 : targetMinusActual
+                        );
     }
 
     static TurnSide getTurnSide(double actual, double target) {
-        if (actual < target) {
+        if (Double.compare(actual, target) < 0) {
             if (Math.abs(actual - target) < 180)
                 return TurnSide.LEFT;
             else return TurnSide.RIGHT;

@@ -13,7 +13,7 @@ import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 public class RobocodeLearningStrategy implements RobocodeStrategy {
 
-    private static final int ITERATIONS = 50;
+    private static final int ITERATIONS = 1;
     private final LoneAgent agent;
     private final QLearningSelector selector;
     private final OnePlayerReferee referee;

@@ -2,7 +2,6 @@ package pl.edu.agh.robocode.learning;
 
 import piqle.environment.ActionList;
 import piqle.environment.IState;
-import pl.edu.agh.robocode.bot.state.distance.NormalizedDistance;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearningState, RobocodeLearningAction> {
@@ -11,6 +10,7 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
     private static final double DISTANCE_REWARD = 10.0;
     private static final double DIRECTION_REWARD = 5.0;
     private static final double PUNISHMENT = -15.0;
+    private static final double WALL_HIT_PUNISHMENT = -20.0;
 
     private final RobocodeLearningState defaultInitalState;
     private final double displacement;
@@ -35,7 +35,11 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
 
     @Override
     protected double calculateReward(RobocodeLearningState oldState, RobocodeLearningState newState, RobocodeLearningAction action) {
-        return newState.getDistanceToWall().compareTo(oldState.getDistanceToWall()) < 0 ? DISTANCE_REWARD : rewardForDirection(oldState, newState);
+        return Double.compare(newState.getDistanceToWall(), 0.0) <= 0 ? WALL_HIT_PUNISHMENT : rewardForDistance(oldState, newState);
+    }
+
+    private double rewardForDistance(RobocodeLearningState oldState, RobocodeLearningState newState) {
+        return newState.getNormalizedDistanceToWall().compareTo(oldState.getNormalizedDistanceToWall()) < 0 ? DISTANCE_REWARD : rewardForDirection(oldState, newState);
     }
 
     private double rewardForDirection(RobocodeLearningState oldState, RobocodeLearningState newState) {

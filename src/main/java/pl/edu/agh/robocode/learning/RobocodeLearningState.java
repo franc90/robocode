@@ -18,15 +18,17 @@ class RobocodeLearningState extends AbstractState {
 
     private final transient WallDistanceHelper wallDistanceHelper = new WallDistanceHelper();
     private final transient RobocodeState robocodeState;
-    private final NormalizedDistance distanceToWall;
+    private final NormalizedDistance normalizedDistanceToWall;
     private final CompassDirection robotDirection;
     private final CompassDirection wallDirection;
+    private final double distanceToWall;
 
     private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
         super(environment);
         this.robocodeState = robocodeState;
         Wall<NormalizedDistance> wall = robocodeState.getWallDistance().getNormalizedNearestWallDistance();
-        distanceToWall = wall.getDistance();
+        normalizedDistanceToWall = wall.getDistance();
+        distanceToWall = robocodeState.getWallDistance().getNearestWall().getDistance();
         wallDirection = wall.getDirection();
         robotDirection = robocodeState.getRobotDirection();
     }
@@ -67,12 +69,16 @@ class RobocodeLearningState extends AbstractState {
         return new RobocodeLearningState(getEnvironment(), newRobocodeState);
     }
 
-    NormalizedDistance getDistanceToWall() {
-        return distanceToWall;
+    NormalizedDistance getNormalizedDistanceToWall() {
+        return normalizedDistanceToWall;
     }
 
     CompassDirection getRobotDirection() {
         return robotDirection;
+    }
+
+    double getDistanceToWall() {
+        return distanceToWall;
     }
 
     ActionList getAvailableActions() {
@@ -107,11 +113,11 @@ class RobocodeLearningState extends AbstractState {
     }
 
     boolean isWallToClose() {
-        return distanceToWall == NormalizedDistance.SMALL;
+        return normalizedDistanceToWall == NormalizedDistance.SMALL;
     }
 
     boolean isWallToFar() {
-        return distanceToWall == NormalizedDistance.BIG;
+        return normalizedDistanceToWall == NormalizedDistance.BIG;
     }
 
     public static class Builder {
@@ -140,7 +146,7 @@ class RobocodeLearningState extends AbstractState {
 
         RobocodeLearningState that = (RobocodeLearningState) o;
 
-        if (distanceToWall != that.distanceToWall) return false;
+        if (normalizedDistanceToWall != that.normalizedDistanceToWall) return false;
         if (robotDirection != that.robotDirection) return false;
         return wallDirection == that.wallDirection;
 
@@ -148,7 +154,7 @@ class RobocodeLearningState extends AbstractState {
 
     @Override
     public int hashCode() {
-        int result = distanceToWall != null ? distanceToWall.hashCode() : 0;
+        int result = normalizedDistanceToWall != null ? normalizedDistanceToWall.hashCode() : 0;
         result = 31 * result + (robotDirection != null ? robotDirection.hashCode() : 0);
         result = 31 * result + (wallDirection != null ? wallDirection.hashCode() : 0);
         return result;
