@@ -38,6 +38,8 @@ public class LearningRobot extends AdvancedRobot {
 
     private Collisions collisions = new Collisions();
 
+    private Collisions roundCollisions = new Collisions();
+
     @Override
     public void run() {
         File dataFile = getDataFile(STATE_FILE);
@@ -102,6 +104,9 @@ public class LearningRobot extends AdvancedRobot {
     @Override
     public void onRoundEnded(RoundEndedEvent event) {
         strategyDataStore.save(strategy);
+        System.out.println("Walls hit: " + roundCollisions.getHitWall());
+        System.out.println("Other robot hit: " + roundCollisions.getHitOtherRobot());
+        System.out.println("Bullet hit: " + roundCollisions.getHitByBullet());
     }
 
     @Override
@@ -112,16 +117,19 @@ public class LearningRobot extends AdvancedRobot {
     @Override
     public void onHitByBullet(HitByBulletEvent event) {
         collisions.hitByBullet();
+        roundCollisions.hitByBullet();
     }
 
     @Override
     public void onHitRobot(HitRobotEvent event) {
         collisions.hitOtherRobot();
+        roundCollisions.hitOtherRobot();
     }
 
     @Override
     public void onHitWall(HitWallEvent event) {
         collisions.hitWall();
+        roundCollisions.hitWall();
     }
 
     private void addEnemy(ScannedRobotEvent event) {
@@ -129,9 +137,16 @@ public class LearningRobot extends AdvancedRobot {
                 .builder()
                 .fromScannedRobotEventAndPosition(event, getX(), getY(), getHeading())
                 .withScannedInTurn(getTime())
+                .withMapDiameter(computeDiamter(getBattleFieldHeight(), getBattleFieldWidth()))
                 .build();
 
         enemies.addEnemy(event.getName(), enemy);
+    }
+
+    private double computeDiamter(double x, double y) {
+        double xVal = x * x;
+        double yVal = y * y;
+        return Math.sqrt(xVal + yVal);
     }
 
     public Collisions getCollisions() {

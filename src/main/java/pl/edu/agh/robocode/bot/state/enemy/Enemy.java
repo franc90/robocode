@@ -1,7 +1,9 @@
 package pl.edu.agh.robocode.bot.state.enemy;
 
 import pl.edu.agh.robocode.bot.state.distance.CompassDirection;
+import pl.edu.agh.robocode.bot.state.distance.NormalizedDistance;
 import pl.edu.agh.robocode.bot.state.distance.helper.CompassDirectionHelper;
+import pl.edu.agh.robocode.bot.state.distance.helper.NormalizedDistanceHelper;
 import robocode.ScannedRobotEvent;
 
 public class Enemy {
@@ -24,7 +26,9 @@ public class Enemy {
 
     private long scannedInTurn;
 
-    public Enemy(String name, double x, double y, double bearing, double distance, double energy, double heading, double velocity, long scannedInTurn) {
+    private NormalizedDistanceHelper normalizedDistanceHelper;
+
+    public Enemy(String name, double x, double y, double bearing, double distance, double energy, double heading, double velocity, long scannedInTurn, double diameter) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -34,6 +38,7 @@ public class Enemy {
         this.heading = heading;
         this.velocity = velocity;
         this.scannedInTurn = scannedInTurn;
+        this.normalizedDistanceHelper = new NormalizedDistanceHelper(diameter);
     }
 
     public String getName() {
@@ -76,6 +81,10 @@ public class Enemy {
 
     public double getDistance() {
         return distance;
+    }
+
+    public NormalizedDistance getNormalizedDistance() {
+        return normalizedDistanceHelper.normalize(distance);
     }
 
     public double getEnergy() {
@@ -128,6 +137,8 @@ public class Enemy {
 
         private long scannedInTurn;
 
+        private double mapDiameter;
+
         public Builder withName(String name) {
             this.name = name;
             return this;
@@ -173,6 +184,11 @@ public class Enemy {
             return this;
         }
 
+        public Builder withMapDiameter(double mapDiameter) {
+            this.mapDiameter = mapDiameter;
+            return this;
+        }
+
         public Builder fromScannedRobotEventAndPosition(ScannedRobotEvent event, double scannerXPosition, double scannerYPosition, double scannerHeading) {
             withName(event.getName());
             withBearing(event.getBearing());
@@ -189,7 +205,7 @@ public class Enemy {
         }
 
         public Enemy build() {
-            return new Enemy(name, x, y, bearing, distance, energy, heading, velocity, scannedInTurn);
+            return new Enemy(name, x, y, bearing, distance, energy, heading, velocity, scannedInTurn, mapDiameter);
         }
 
         private double getLineAngle(double heading, double scannerHeading) {
