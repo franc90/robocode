@@ -1,4 +1,4 @@
-package pl.edu.agh.robocode.learning;
+package pl.edu.agh.robocode.learning.environment;
 
 import piqle.environment.AbstractState;
 import piqle.environment.ActionList;
@@ -9,19 +9,27 @@ import pl.edu.agh.robocode.bot.state.distance.CompassDirection;
 import pl.edu.agh.robocode.bot.state.distance.NormalizedDistance;
 import pl.edu.agh.robocode.bot.state.distance.Wall;
 import pl.edu.agh.robocode.bot.state.distance.WallDistance;
+import pl.edu.agh.robocode.bot.state.enemy.Enemies;
+import pl.edu.agh.robocode.bot.state.enemy.Enemy;
 import pl.edu.agh.robocode.bot.state.helper.WallDistanceHelper;
+import pl.edu.agh.robocode.exception.NullValueException;
+import pl.edu.agh.robocode.learning.action.ActionListCreatorFactory;
+import pl.edu.agh.robocode.learning.action.ActionSpecification;
+import pl.edu.agh.robocode.learning.action.RobocodeLearningAction;
 
-import java.util.EnumSet;
 
-
-class RobocodeLearningState extends AbstractState {
+public class RobocodeLearningState extends AbstractState {
 
     private final transient WallDistanceHelper wallDistanceHelper = new WallDistanceHelper();
     private final transient RobocodeState robocodeState;
+    private final transient Enemy enemy;
     private final NormalizedDistance normalizedDistanceToWall;
     private final CompassDirection robotDirection;
     private final CompassDirection wallDirection;
     private final double distanceToWall;
+    private final NormalizedDistance normalizedEnemyDistance;
+    private final CompassDirection enemyPosition;
+    private final double enemyDistance;
 
     private RobocodeLearningState(IEnvironment environment, RobocodeState robocodeState) {
         super(environment);
@@ -31,6 +39,10 @@ class RobocodeLearningState extends AbstractState {
         distanceToWall = robocodeState.getWallDistance().getNearestWall().getDistance();
         wallDirection = wall.getDirection();
         robotDirection = robocodeState.getRobotDirection();
+        enemy = getEnemy();
+        enemyDistance = enemy.getDistance();
+        normalizedEnemyDistance = enemy.getNormalizedDistance();
+        enemyPosition = enemy.getNormalizedBearing();
     }
 
     @Override
@@ -61,11 +73,19 @@ class RobocodeLearningState extends AbstractState {
                                                 .withY(newY)
                                                 .withX(newX)
                                                 .build();
+        double newEnemyDistance = Math.hypot(newX - enemy.getX(), newY - enemy.getY());
+        Enemy newEnemy = new Enemy.Builder()
+                .fromEnemy(enemy)
+                .withDistance(newEnemyDistance)
+                .build();
+        Enemies enemies = robocodeState.getEnemies();
+        enemies.addEnemy(newEnemy.getName(), newEnemy);
         WallDistance newWallDistance = wallDistanceHelper.compute(newRobotState);
         RobocodeState newRobocodeState = new RobocodeState();
         newRobocodeState.setRobotDirection(newDirection);
         newRobocodeState.setRobotState(newRobotState);
         newRobocodeState.setWallDistance(newWallDistance);
+        newRobocodeState.setEnemies(enemies);
         return new RobocodeLearningState(getEnvironment(), newRobocodeState);
     }
 
@@ -73,35 +93,27 @@ class RobocodeLearningState extends AbstractState {
         return normalizedDistanceToWall;
     }
 
-    CompassDirection getRobotDirection() {
-        return robotDirection;
+    NormalizedDistance getNormalizedEnemyDistance() {
+        return normalizedEnemyDistance;
     }
 
     double getDistanceToWall() {
         return distanceToWall;
     }
 
-    ActionList getAvailableActions() {
-        if(isWallToClose()) {
-                EnumSet<RobocodeLearningAction> all = EnumSet.allOf(RobocodeLearningAction.class);
-                all.remove(RobocodeLearningAction.forDirection(robotDirection));
-                return fromEnumSet(all);
-        }
-        else if(isWallToFar()) {
-            RobocodeLearningAction action = RobocodeLearningAction.forDirection(robotDirection);
-            ActionList actionList = new ActionList(this);
-            actionList.add(action);
-            return actionList;
-        }
-        return fromEnumSet(EnumSet.allOf(RobocodeLearningAction.class));
+    double getDistanceToEnemy() {
+        return enemyDistance;
     }
 
-    private ActionList fromEnumSet(EnumSet<RobocodeLearningAction> set) {
-        ActionList actionList = new ActionList(this);
-        for (RobocodeLearningAction robocodeLearningAction : set) {
-            actionList.add(robocodeLearningAction);
-        }
-        return actionList;
+    ActionList getAvailableActions() {
+        ActionSpecification specification = new ActionSpecification.ActionSpecificationBuilder()
+                                    .withDistanceToEnemy(normalizedEnemyDistance)
+                                    .withDistancetToWall(normalizedDistanceToWall)
+                                    .withEnemyDirection(enemyPosition)
+                                    .withRobotDirection(robotDirection)
+                                    .withWallDirection(wallDirection)
+                                    .build();
+        return ActionListCreatorFactory.forSpecificationAndState(specification, this).create();
     }
 
     public static Builder builder() {
@@ -112,12 +124,12 @@ class RobocodeLearningState extends AbstractState {
         return robocodeState.getRobotState().getEnergy() <= 0.0;
     }
 
-    boolean isWallToClose() {
-        return normalizedDistanceToWall == NormalizedDistance.SMALL;
-    }
-
-    boolean isWallToFar() {
-        return normalizedDistanceToWall == NormalizedDistance.BIG;
+    private Enemy getEnemy() {
+        try{
+            return robocodeState.getEnemies().getNearest();
+        } catch (NullValueException e) {
+            return new NoEnemyWrapper();
+        }
     }
 
     public static class Builder {
@@ -139,6 +151,7 @@ class RobocodeLearningState extends AbstractState {
         }
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -148,7 +161,9 @@ class RobocodeLearningState extends AbstractState {
 
         if (normalizedDistanceToWall != that.normalizedDistanceToWall) return false;
         if (robotDirection != that.robotDirection) return false;
-        return wallDirection == that.wallDirection;
+        if (wallDirection != that.wallDirection) return false;
+        if (normalizedEnemyDistance != that.normalizedEnemyDistance) return false;
+        return enemyPosition == that.enemyPosition;
 
     }
 
@@ -157,6 +172,8 @@ class RobocodeLearningState extends AbstractState {
         int result = normalizedDistanceToWall != null ? normalizedDistanceToWall.hashCode() : 0;
         result = 31 * result + (robotDirection != null ? robotDirection.hashCode() : 0);
         result = 31 * result + (wallDirection != null ? wallDirection.hashCode() : 0);
+        result = 31 * result + (normalizedEnemyDistance != null ? normalizedEnemyDistance.hashCode() : 0);
+        result = 31 * result + (enemyPosition != null ? enemyPosition.hashCode() : 0);
         return result;
     }
 }

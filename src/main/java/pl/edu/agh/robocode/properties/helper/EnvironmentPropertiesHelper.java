@@ -8,7 +8,7 @@ import robocode.Robot;
 public class EnvironmentPropertiesHelper {
 
     private static final double DEFAULT_TURN_ANGLE = 30;
-    private static final double TO_DISPLACEMENT_PERCENTAGE = .05;
+    private static final double TO_DISPLACEMENT_PERCENTAGE = .10;
 
 
     public EnvironmentProperties generateProperties(RobocodeState state) {

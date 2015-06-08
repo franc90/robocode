@@ -1,9 +1,9 @@
-package pl.edu.agh.robocode.learning;
+package pl.edu.agh.robocode.learning.action;
 
 import piqle.environment.IAction;
 import pl.edu.agh.robocode.bot.state.distance.CompassDirection;
 
-enum RobocodeLearningAction implements IAction {
+public enum RobocodeLearningAction implements IAction {
 
     TO_NORTH(CompassDirection.N, 0.0, 1, 0),
     TO_SOUTH(CompassDirection.S, 180.0, -1, 0),
@@ -34,23 +34,23 @@ enum RobocodeLearningAction implements IAction {
         return new double[0];
     }
 
-    CompassDirection getDirection() {
+    public CompassDirection getDirection() {
         return direction;
     }
 
-    double getTargetHeading() {
+    public double getTargetHeading() {
         return targetHeading;
     }
 
-    int getYDisplacementSign() {
+    public int getYDisplacementSign() {
         return yDisplacementSign;
     }
 
-    int getXDisplacementSign() {
+    public int getXDisplacementSign() {
         return xDisplacementSign;
     }
 
-    static RobocodeLearningAction forDirection(CompassDirection direction) {
+    public static RobocodeLearningAction forDirection(CompassDirection direction) {
         for(RobocodeLearningAction action : values())
             if(action.direction == direction)
                 return action;

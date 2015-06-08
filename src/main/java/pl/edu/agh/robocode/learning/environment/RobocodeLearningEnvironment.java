@@ -1,16 +1,16 @@
-package pl.edu.agh.robocode.learning;
+package pl.edu.agh.robocode.learning.environment;
 
 import piqle.environment.ActionList;
 import piqle.environment.IState;
+import pl.edu.agh.robocode.learning.action.RobocodeLearningAction;
 import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
-class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearningState, RobocodeLearningAction> {
+public class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearningState, RobocodeLearningAction> {
 
 
     private static final double DISTANCE_REWARD = 10.0;
-    private static final double DIRECTION_REWARD = 5.0;
     private static final double PUNISHMENT = -15.0;
-    private static final double WALL_HIT_PUNISHMENT = -20.0;
+    private static final double HIT_PUNISHMENT = -20.0;
 
     private final RobocodeLearningState defaultInitalState;
     private final double displacement;
@@ -35,16 +35,23 @@ class RobocodeLearningEnvironment extends AbstractTypedEnvironment<RobocodeLearn
 
     @Override
     protected double calculateReward(RobocodeLearningState oldState, RobocodeLearningState newState, RobocodeLearningAction action) {
-        return Double.compare(newState.getDistanceToWall(), 0.0) <= 0 ? WALL_HIT_PUNISHMENT : rewardForDistance(oldState, newState);
+        return hitWallOrEnemy(newState) ? HIT_PUNISHMENT : rewardForDistance(oldState, newState);
+    }
+
+    private boolean hitWallOrEnemy(RobocodeLearningState newState) {
+        return Double.compare(newState.getDistanceToWall(), 0.0) <= 0
+                || Double.compare(newState.getDistanceToEnemy(), 0.0) <= 0;
     }
 
     private double rewardForDistance(RobocodeLearningState oldState, RobocodeLearningState newState) {
-        return newState.getNormalizedDistanceToWall().compareTo(oldState.getNormalizedDistanceToWall()) < 0 ? DISTANCE_REWARD : rewardForDirection(oldState, newState);
+        return reducedDistance(oldState, newState) ? DISTANCE_REWARD : PUNISHMENT;
     }
 
-    private double rewardForDirection(RobocodeLearningState oldState, RobocodeLearningState newState) {
-        return oldState.getRobotDirection() != newState.getRobotDirection() ? DIRECTION_REWARD : PUNISHMENT;
+    private boolean reducedDistance(RobocodeLearningState oldState, RobocodeLearningState newState) {
+        return newState.getNormalizedDistanceToWall().compareTo(oldState.getNormalizedDistanceToWall()) < 0
+                || newState.getNormalizedEnemyDistance().compareTo(oldState.getNormalizedEnemyDistance()) < 0;
     }
+
 
     @Override
     protected boolean isStateFinal(RobocodeLearningState state) {

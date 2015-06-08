@@ -1,4 +1,4 @@
-package pl.edu.agh.robocode.learning;
+package pl.edu.agh.robocode.learning.environment;
 
 import piqle.environment.AbstractEnvironmentSingle;
 import piqle.environment.ActionList;

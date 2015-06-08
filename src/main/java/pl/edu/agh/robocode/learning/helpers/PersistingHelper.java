@@ -1,11 +1,11 @@
-package pl.edu.agh.robocode.learning;
+package pl.edu.agh.robocode.learning.helpers;
 
 import pl.edu.agh.robocode.exception.NullValueException;
 import robocode.RobocodeFileOutputStream;
 
 import java.io.*;
 
-class PersistingHelper<T extends Serializable> {
+public class PersistingHelper<T extends Serializable> {
 
     private File dataFile;
 

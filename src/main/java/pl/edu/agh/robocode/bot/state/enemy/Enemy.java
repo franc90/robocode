@@ -27,6 +27,7 @@ public class Enemy {
     private long scannedInTurn;
 
     private NormalizedDistanceHelper normalizedDistanceHelper;
+    private double mapDiameter;
 
     public Enemy(String name, double x, double y, double bearing, double distance, double energy, double heading, double velocity, long scannedInTurn, double diameter) {
         this.name = name;
@@ -38,6 +39,7 @@ public class Enemy {
         this.heading = heading;
         this.velocity = velocity;
         this.scannedInTurn = scannedInTurn;
+        this.mapDiameter = diameter;
         this.normalizedDistanceHelper = new NormalizedDistanceHelper(diameter);
     }
 
@@ -204,6 +206,19 @@ public class Enemy {
             return this;
         }
 
+        public Builder fromEnemy(Enemy enemy) {
+            withName(enemy.getName());
+            withBearing(enemy.getBearing());
+            withDistance(enemy.getDistance());
+            withEnergy(enemy.getEnergy());
+            withHeading(enemy.getHeading());
+            withVelocity(enemy.getVelocity());
+            withY(enemy.getY());
+            withX(enemy.getX());
+            withScannedInTurn(enemy.getScannedInTurn());
+            withMapDiameter(enemy.mapDiameter);
+            return this;
+        }
         public Enemy build() {
             return new Enemy(name, x, y, bearing, distance, energy, heading, velocity, scannedInTurn, mapDiameter);
         }
