@@ -35,7 +35,7 @@ abstract class AbstractTypedEnvironment<S extends IState, A extends IAction> ext
 
     @Override
     public boolean isFinal(IState state) {
-        return isStateFinal((S) state);
+        return false;
     }
 
     @Override

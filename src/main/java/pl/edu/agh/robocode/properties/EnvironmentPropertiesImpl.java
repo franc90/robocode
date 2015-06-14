@@ -2,9 +2,11 @@ package pl.edu.agh.robocode.properties;
 
 import pl.edu.agh.robocode.bot.state.RobocodeState;
 
-public class EnvironmentPropertiesImpl implements EnvironmentProperties {
+import java.io.Serializable;
 
-    private RobocodeState initialState;
+public class EnvironmentPropertiesImpl implements EnvironmentProperties, Serializable {
+
+    private transient RobocodeState initialState;
     private double displacementValue;
     private double turnAngle;
 

@@ -17,16 +17,22 @@ import pl.edu.agh.robocode.properties.EnvironmentProperties;
 
 public class RobocodeLearningStrategy implements RobocodeStrategy {
 
-    private static final int ITERATIONS = 1;
+    private static final int ITERATIONS = 50;
     private final LoneAgent agent;
     private final QLearningSelector selector;
     private final OnePlayerReferee referee;
 
-    RobocodeLearningStrategy(EnvironmentProperties properties, QLearningSelector selector) {
+
+    RobocodeLearningStrategy(EnvironmentProperties properties, QLearningSelector selector ){
+        this(selector, new LoneAgent(new RobocodeLearningEnvironment(properties), selector));
+    }
+
+    RobocodeLearningStrategy(QLearningSelector selector, LoneAgent agent) {
         this.selector = selector;
         this.selector.setEpsilon(0.05);
-        agent = new LoneAgent(new RobocodeLearningEnvironment(properties), this.selector);
-        agent.enableLearning();
+        this.selector.setGamma(0.4);
+        this.agent = agent;
+        this.agent.enableLearning();
         referee = new OnePlayerReferee(agent);
         referee.setMaxIter(ITERATIONS);
     }
@@ -37,13 +43,20 @@ public class RobocodeLearningStrategy implements RobocodeStrategy {
                 .withRobocodeState(state)
                 .build();
         referee.episode(learningState);
-        selector.setEpsilon(selector.getEpsilon()*0.99999);
         RobocodeLearningAction action = (RobocodeLearningAction) selector.bestAction(learningState);
         return  createMotionAction(state, action);
     }
 
     QLearningSelector getSelector() {
         return selector;
+    }
+
+    LoneAgent getAgent() {
+        return agent;
+    }
+
+    String reward() {
+        return Double.toString(referee.getRewardForEpisode());
     }
 
     private MotionAction createMotionAction(RobocodeState state, RobocodeLearningAction action) {

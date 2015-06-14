@@ -7,6 +7,7 @@ import pl.edu.agh.robocode.bot.state.enemy.Enemies;
 import pl.edu.agh.robocode.bot.state.enemy.Enemy;
 import pl.edu.agh.robocode.bot.state.helper.GunPositionerHelper;
 import pl.edu.agh.robocode.bot.state.helper.RobocodeStateHelper;
+import pl.edu.agh.robocode.bot.statistics.Statistics;
 import pl.edu.agh.robocode.bot.strategy.RobocodeStrategyDataStore;
 import pl.edu.agh.robocode.exception.NullValueException;
 import pl.edu.agh.robocode.learning.RobocodeLearningStrategy;
@@ -23,6 +24,8 @@ import java.io.File;
 public class LearningRobot extends AdvancedRobot {
 
     private static final String STATE_FILE = "robotState";
+    private static final String WALL_HITS_FILE = "wall_hits.txt";
+    private static final String ENEMY_HITS_FILE = "enemy_hits.txt";
 
     private RobocodeLearningStrategy strategy;
 
@@ -39,11 +42,14 @@ public class LearningRobot extends AdvancedRobot {
     private Collisions collisions = new Collisions();
 
     private Collisions roundCollisions = new Collisions();
+    private Statistics wallHitsStats;
+    private Statistics enemyHitsStats;
 
     @Override
     public void run() {
-        File dataFile = getDataFile(STATE_FILE);
-        strategyDataStore = new RobocodeLearningStrategyDataStore(dataFile);
+        wallHitsStats = new Statistics(getDataFile(WALL_HITS_FILE));
+        enemyHitsStats = new Statistics(getDataFile(ENEMY_HITS_FILE));
+        strategyDataStore = new RobocodeLearningStrategyDataStore(getDataFile(STATE_FILE), getDataFile("agent"), getDataFile("rewards.txt"));
         properties = environmentPropertiesHelper.generateProperties(robocodeStateHelper.create(this));
         strategy = strategyDataStore.load(properties);
 
@@ -107,6 +113,8 @@ public class LearningRobot extends AdvancedRobot {
         System.out.println("Walls hit: " + roundCollisions.getHitWall());
         System.out.println("Other robot hit: " + roundCollisions.getHitOtherRobot());
         System.out.println("Bullet hit: " + roundCollisions.getHitByBullet());
+        wallHitsStats.save(Integer.toString(roundCollisions.getHitWall()));
+        enemyHitsStats.save(Integer.toString(roundCollisions.getHitOtherRobot()));
     }
 
     @Override
